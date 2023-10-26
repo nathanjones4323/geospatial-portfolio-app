@@ -2,14 +2,17 @@
 import os
 
 import geopandas as gpd
+from dotenv import load_dotenv
 from loguru import logger
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 
-logger.debug(os.environ['POSTGRES_USER'])
-logger.debug(os.environ['POSTGRES_PASSWORD'])
-logger.debug(os.environ['POSTGRES_HOST'])
-logger.debug(os.environ['POSTGRES_PORT'])
-logger.debug(os.environ['POSTGRES_DB'])
+# Load Environment Variables
+dotenv_path = os.path.dirname(__file__)
+try:
+    load_dotenv(dotenv_path)
+    logger.success("Loaded .env file")
+except:
+    logger.error("Could not load .env file")
 
 # Read Shapefile
 try:
@@ -19,13 +22,21 @@ try:
 except Exception as e:
     logger.error(f"Error reading 2020 CBSA shapefile from the US Census: {e}")
 
+# Clean Data
+try:
+    geo_data.columns = [x.strip().lower() for x in geo_data.columns]
+    geo_data.rename(columns={'geoid': 'geo_id'}, inplace=True)
+except Exception as e:
+    logger.error(f"Error cleaning dataframe: {e}")
+
+
 # Create DB Connection
 try:
-    db_user = os.environ['POSTGRES_USER']
-    db_pass = os.environ['POSTGRES_PASSWORD']
-    db_host = os.environ['POSTGRES_HOST']
-    db_port = os.environ['POSTGRES_PORT']
-    db_name = os.environ['POSTGRES_DB']
+    db_user = os.getenv('POSTGRES_USER')
+    db_pass = os.getenv('POSTGRES_PASSWORD')
+    db_host = os.getenv('POSTGRES_HOST')
+    db_port = os.getenv('POSTGRES_PORT')
+    db_name = os.getenv('POSTGRES_DB')
 
     conn_string = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
     engine = create_engine(url=conn_string)
@@ -40,7 +51,9 @@ try:
                         if_exists='fail', index=False)
 
     # Create Primary Key from Index column
-    conn.execute('ALTER TABLE cbsa_census_2020 ADD PRIMARY KEY (id);')
+    conn.execute(
+        text('ALTER TABLE cbsa_census_2020 ADD PRIMARY KEY (geo_id);'))
+    logger.success("Created primary key on geo_id column")
     logger.success("Successfully wrote 2020 CBSA shapefile to DB")
 except Exception as e:
     logger.error(f"Error writing 2020 CBSA shapefile to DB: {e}")
