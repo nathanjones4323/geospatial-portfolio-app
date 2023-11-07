@@ -29,7 +29,7 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./data-pipelines/census/.env
-    command: ["python3", "geographies.py"]  # Command to run your Python script
+    command: ["python3", "main.py"]  # Command to run your Python script
     depends_on:
       db:
         condition: service_healthy  # Wait for the db service to be healthy

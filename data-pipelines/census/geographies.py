@@ -16,11 +16,11 @@ except:
 
 # Read Shapefile
 try:
-    url = "https://www2.census.gov/geo/tiger/TIGER2020/CBSA/tl_2020_us_cbsa.zip"
+    url = "https://www2.census.gov/geo/tiger/TIGER2021/CBSA/tl_2021_us_cbsa.zip"
     geo_data = gpd.read_file(url)
-    logger.success("Successfully read 2020 CBSA shapefile from the US Census")
+    logger.success("Successfully read 2021 CBSA shapefile from the US Census")
 except Exception as e:
-    logger.error(f"Error reading 2020 CBSA shapefile from the US Census: {e}")
+    logger.error(f"Error reading 2021 CBSA shapefile from the US Census: {e}")
 
 # Clean Data
 try:
@@ -47,16 +47,16 @@ except Exception as e:
 
 try:
     # Dump Data into New Database Table
-    geo_data.to_postgis("cbsa_census_2020", conn,
-                        if_exists='fail', index=False)
+    geo_data.to_postgis("cbsa_census_2021", conn,
+                        if_exists='fail', index=True)
+    logger.success("Successfully wrote 2021 CBSA shapefile to DB")
 
     # Create Primary Key from Index column
     conn.execute(
-        text('ALTER TABLE cbsa_census_2020 ADD PRIMARY KEY (geo_id);'))
-    logger.success("Created primary key on geo_id column")
-    logger.success("Successfully wrote 2020 CBSA shapefile to DB")
+        text('ALTER TABLE cbsa_census_2021 ADD PRIMARY KEY (id);'))
+    logger.success("Created primary key on id column")
 except Exception as e:
-    logger.error(f"Error writing 2020 CBSA shapefile to DB: {e}")
+    logger.error(f"Error writing 2021 CBSA shapefile to DB: {e}")
 
 # Close DB Connection
 conn.close()
