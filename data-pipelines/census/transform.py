@@ -1,6 +1,7 @@
 import json
 import re
 
+import numpy as np
 import pandas as pd
 import requests
 
@@ -15,6 +16,8 @@ def clean_census_zcta_data(response: requests.Response) -> pd.DataFrame:
     data.drop(columns=["NAME"], inplace=True)
     # Rename to ZCTA
     data.rename(columns={"zip code tabulation area": "zcta"}, inplace=True)
+    # Replace NULL encoded values with NaN
+    data.replace(to_replace="-666666666", value=np.nan, inplace=True)
     return data
 
 
@@ -32,9 +35,12 @@ def standardize_column_names(column_name):
     column_name = column_name.replace("!!:", "_")
     column_name = column_name.replace("!!", "_")
     column_name = column_name.replace(" ", "_")
-    column_name = column_name.replace("--", "")
     column_name = column_name.replace("-", "_")
     column_name = column_name.replace("/", "_")
+    column_name = column_name.replace(",", "_")
+    # column_name = column_name.replace("(", "_")
+    # column_name = column_name.replace(")", "_")
+    column_name = column_name.replace("--", "")
     column_name = column_name.replace(":", "")
     column_name = column_name.replace('"', "")
     column_name = column_name.replace("'", "")

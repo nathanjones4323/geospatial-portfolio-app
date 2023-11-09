@@ -25,7 +25,7 @@ services:
     image: geospatial_app_data-pipeline
     container_name: geospatial_app_data-pipeline
     build: 
-      context: ./data-pipelines/census  # Build context is the current directory
+      context: ./data-pipelines/census
       dockerfile: Dockerfile
     env_file:
       - ./data-pipelines/census/.env

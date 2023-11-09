@@ -25,6 +25,7 @@
 - [About](#about)
 - [Getting Started](#getting_started)
 - [Usage](#usage)
+- [TODO] (#todo)
 
 ## 🧐 About <a name = "about"></a>
 
@@ -58,3 +59,8 @@ docker-compose up -d
 ```
 docker-compose up --force-recreate --build -d && docker image prune -f
 ```
+
+## 🗒️ TODO <a name = "todo"></a>
+
+- [ ] Fix truncating column name error ==> Postgres can only handle 63 characters for column names and this is causing duplicate column names
+- [ ] Add CBSA data to the data pipelines

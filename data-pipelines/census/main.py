@@ -6,8 +6,6 @@ from load import create_acs_pkey, init_connection, load_acs_data
 from loguru import logger
 from transform import clean_census_zcta_data, get_human_readable_columns
 
-from utils import truncate_column_names
-
 try:
     r = extract_acs_data()
     logger.success("Successfully read 2021 ACS data from the US Census")
@@ -45,6 +43,7 @@ except Exception as e:
     logger.error(f"Error connecting to DB: {e}")
 
 try:
+    data = data[["zcta", "est_gross_rent_occupied_units_paying_rent_median_dollars"]]
     load_acs_data(data, conn)
     logger.success("Successfully wrote 2021 ACS data to DB")
     create_acs_pkey(conn)
