@@ -23,7 +23,7 @@
 - [About](#about)
 - [Getting Started](#getting_started)
 - [Running the App](#usage)
-- [TODO] (#todo)
+- [TODO](#todo)
 
 ## 🧐 About <a name = "about"></a>
 
