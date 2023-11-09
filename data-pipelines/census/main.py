@@ -1,10 +1,10 @@
 import os
 
-from census.extract import extract_acs_data
-from census.load import create_acs_pkey, init_connection, load_acs_data
-from census.transform import clean_census_zcta_data, get_human_readable_columns
 from dotenv import load_dotenv
+from extract import extract_acs_data
+from load import create_acs_pkey, init_connection, load_acs_data
 from loguru import logger
+from transform import clean_census_zcta_data, get_human_readable_columns
 
 from utils import truncate_column_names
 
