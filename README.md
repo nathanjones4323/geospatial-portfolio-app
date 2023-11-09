@@ -36,7 +36,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 Docker ([Docker Desktop comes with Docker](https://www.docker.com/products/docker-desktop/))
 
-## Running the App <a name = "usage"></a>
+## 🏃 Running the App <a name = "usage"></a>
 
 Clone the repoisitory
 ```
