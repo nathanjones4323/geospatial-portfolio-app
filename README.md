@@ -1,15 +1,13 @@
 <p align="center">
   <a href="" rel="noopener">
- <img width=200px height=200px src="" alt="Project logo"></a>
+  <!-- Use the image stored in this relative path `images/logo.png` as the src attribute of the img tag. -->
+  <img width=200px height=200px src="images/logo.png" alt="Project logo"></a>
 </p>
 
-<h3 align="center">PROJECT NAME</h3>
+<h3 align="center">US Census Interactive GIS Application</h3>
 
 <div align="center">
 
-[![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![GitHub Issues](https://img.shields.io/github/issues/kylelobo/The-Documentation-Compendium.svg)](https://github.com/kylelobo/The-Documentation-Compendium/issues)
-[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kylelobo/The-Documentation-Compendium.svg)](https://github.com/kylelobo/The-Documentation-Compendium/pulls)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
 </div>
@@ -24,7 +22,7 @@
 
 - [About](#about)
 - [Getting Started](#getting_started)
-- [Usage](#usage)
+- [Running the App](#usage)
 - [TODO] (#todo)
 
 ## 🧐 About <a name = "about"></a>
@@ -42,12 +40,12 @@ Docker ([Docker Desktop comes with Docker](https://www.docker.com/products/docke
 
 Clone the repoisitory
 ```
-git clone {repo}
+git clone https://github.com/nathanjones4323/geospatial-portfolio-app.git
 ```
 
 Navigate to the app's directory
 ```
-cd && cd `path_to_app`
+cd geospatial-portfolio-app
 ```
 
 Run the following in your terminal:
@@ -60,7 +58,16 @@ docker-compose up -d
 docker-compose up --force-recreate --build -d && docker image prune -f
 ```
 
+If this is the first time you are running the app, it will take a few minutes for the data pipelines to finish running. You can check the status of the pipelines by running the following command:
+
+```bash
+docker-compose logs -f
+```
+
+Once the pipelines have finished running (or if you are restarting the app), you can access the Streamlit UI at http://localhost:8501
+
 ## 🗒️ TODO <a name = "todo"></a>
 
 - [ ] Fix truncating column name error ==> Postgres can only handle 63 characters for column names and this is causing duplicate column names
 - [ ] Add CBSA data to the data pipelines
+- [ ] Add a check to the data pipelines to see if the data has already run and if so, don't run it again
