@@ -1,7 +1,7 @@
 <p align="center">
   <a href="" rel="noopener">
   <!-- Use the image stored in this relative path `images/logo.png` as the src attribute of the img tag. -->
-  <img width=300px height=200px src="images/logo.png" alt="Project logo"></a>
+  <img width=500px height=300px src="images/logo.png" alt="Project logo"></a>
 </p>
 
 <h3 align="center">US Census Interactive GIS Application</h3>
