@@ -1,5 +1,7 @@
 import os
 
+import pandas as pd
+from loguru import logger
 from sqlalchemy import create_engine, text
 
 
@@ -19,10 +21,12 @@ def init_connection():
 def load_acs_data(data, conn):
     # Dump Data into New Database Table
     data.to_sql("acs_census_2021", conn,
-                if_exists='fail', index=True)
+                if_exists='fail', index=True, index_label='id')
+    logger.success("Successfully wrote 2021 ACS data to DB")
 
 
 def create_acs_pkey(conn):
     # Create Primary Key from Index column
     conn.execute(
         text('ALTER TABLE acs_census_2021 ADD PRIMARY KEY (id);'))
+    logger.success("Created primary key on id column")

@@ -24,7 +24,7 @@ def init_connection() -> Engine:
     db_name = os.environ['POSTGRES_NAME']
 
     conn_string = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
-    engine = create_engine(url=conn_string)
+    engine = create_engine(url=conn_string).connect()
 
     return engine
 
