@@ -68,6 +68,8 @@ Once the pipelines have finished running (or if you are restarting the app), you
 
 ## 🗒️ TODO <a name = "todo"></a>
 
+- [x] Add CBSA data to the data pipelines
+- [x] Add a check to the data pipelines to see if the data has already run and if so, don't run it again
 - [ ] Fix truncating column name error ==> Postgres can only handle 63 characters for column names and this is causing duplicate column names
-- [ ] Add CBSA data to the data pipelines
-- [ ] Add a check to the data pipelines to see if the data has already run and if so, don't run it again
+- [ ] Build out Streamlit UI / functionality
+- [ ] Speed up the data pipelines using threading
