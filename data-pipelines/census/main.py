@@ -1,37 +1,10 @@
 import os
 
 from dotenv import load_dotenv
-from extract import extract_acs_data
-from load import create_acs_pkey, init_connection, load_acs_data
 from loguru import logger
-from transform import clean_census_zcta_data, get_human_readable_columns
-
-from utils import is_table_initialized
-
-# Check if table is already initialized
-if is_table_initialized("acs_census_2021"):
-    exit()
-
-try:
-    r = extract_acs_data()
-    logger.success("Successfully read 2021 ACS data from the US Census")
-except Exception as e:
-    logger.error(f"Error reading 2021 ACS data from the US Census: {e}")
-
-
-try:
-    data = clean_census_zcta_data(r)
-    logger.success("Data cleaned successfully")
-except Exception as e:
-    logger.error(f"Error cleaning data: {e}")
-
-
-try:
-    data = get_human_readable_columns(
-        "https://api.census.gov/data/2021/acs/acs5/profile/variables.json", data)
-    logger.success("Data columns cleaned successfully")
-except Exception as e:
-    logger.error(f"Error cleaning data columns: {e}")
+from pipelines import (run_acs_2021_cbsa_pipeline, run_acs_2021_zcta_pipeline,
+                       run_cbsa_geography_boundary_pipeline,
+                       run_zcta_geography_boundary_pipeline)
 
 try:
     # Load Environment Variables
@@ -41,23 +14,10 @@ try:
 except:
     logger.error("Could not load .env file")
 
-# Create DB Connection
-try:
-    conn = init_connection()
-    logger.success("Successfully connected to DB")
-except Exception as e:
-    logger.error(f"Error connecting to DB: {e}")
+run_acs_2021_zcta_pipeline()
 
-try:
-    data = data[["zcta", "est_gross_rent_occupied_units_paying_rent_median_dollars"]]
-    load_acs_data(data, conn)
-except Exception as e:
-    logger.error(f"Error writing 2021 ACS data to DB: {e}")
+run_acs_2021_cbsa_pipeline()
 
-try:
-    create_acs_pkey(conn)
-except Exception as e:
-    logger.error(f"Error creating primary key on id column: {e}")
+run_zcta_geography_boundary_pipeline()
 
-# Close DB Connection
-conn.close()
+run_cbsa_geography_boundary_pipeline()

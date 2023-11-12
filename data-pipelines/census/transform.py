@@ -6,7 +6,7 @@ import pandas as pd
 import requests
 
 
-def clean_census_zcta_data(response: requests.Response) -> pd.DataFrame:
+def clean_census_data(response: requests.Response, geography="zcta") -> pd.DataFrame:
     data = pd.DataFrame(json.loads(response.text))
     # Set the 1st row as the header
     data.columns = data.iloc[0]
@@ -14,8 +14,14 @@ def clean_census_zcta_data(response: requests.Response) -> pd.DataFrame:
     # Remove the columns that are not needed
     data = data.loc[:, ~data.columns.str.endswith(("EA", "MA", "M"))]
     data.drop(columns=["NAME"], inplace=True)
-    # Rename to ZCTA
-    data.rename(columns={"zip code tabulation area": "zcta"}, inplace=True)
+    # Rename the geography column
+    if geography == "zcta":
+        name = "zip code tabulation area"
+        data.rename(columns={"zip code tabulation area": "zcta"}, inplace=True)
+    elif geography == "cbsa":
+        name = "metropolitan statistical area/micropolitan statistical area"
+        data.rename(columns={
+                    "metropolitan statistical area/micropolitan statistical area": "cbsa"}, inplace=True)
     # Replace NULL encoded values with NaN
     data.replace(to_replace="-666666666", value=np.nan, inplace=True)
     return data
