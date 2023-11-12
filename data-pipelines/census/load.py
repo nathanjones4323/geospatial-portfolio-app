@@ -25,6 +25,12 @@ def load_data(data, conn, table_name):
     logger.success(f"Successfully wrote table {table_name} to DB")
 
 
+def load_boundary_data(data, conn, table_name):
+    data.to_postgis(table_name, conn,
+                    if_exists='fail', index=True, index_label='id')
+    logger.success(f"Successfully wrote table {table_name} to DB")
+
+
 def create_acs_pkey(conn, table_name):
     # Create Primary Key from Index column
     conn.execute(

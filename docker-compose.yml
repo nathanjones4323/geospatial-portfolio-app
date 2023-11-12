@@ -33,6 +33,19 @@ services:
     depends_on:
       db:
         condition: service_healthy  # Wait for the db service to be healthy
+  
+  streamlit:
+    image: streamlit
+    container_name: streamlit
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+    env_file:
+      - ./data-pipelines/census/.env
+    command: ["streamlit", "run", "00_🏠_Homepage.py"]
+    restart: on-failure  # Restart the streamlit service only if it exits with a non-zero status
+    ports:
+      - "8501:8501"
 
 volumes:
   geospatial_app_postgis:
