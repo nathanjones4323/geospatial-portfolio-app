@@ -15,4 +15,4 @@ RUN pip3 install -r requirements.txt
 COPY . /app
 
 # Specify the entry point for your container
-CMD ["python", "geographies.py"]
+CMD ["python", "main.py"]

@@ -31,8 +31,9 @@ def run():
 
     st.write('---')
 
-    components.iframe(
-        src="https://www.loom.com/share/3c1111b69e78453bb0e4c4185a5be74f")
+    # Add tutorial video
+    # components.iframe(
+    #     src="https://www.loom.com/share/")
 
     column_1, column_2, column_3 = st.columns((1, 3, 3))
 
