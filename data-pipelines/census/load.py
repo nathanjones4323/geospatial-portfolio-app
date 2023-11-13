@@ -31,8 +31,8 @@ def load_boundary_data(data, conn, table_name):
     logger.success(f"Successfully wrote table {table_name} to DB")
 
 
-def create_acs_pkey(conn, table_name):
+def create_pkey(conn, table_name, index_column):
     # Create Primary Key from Index column
     conn.execute(
-        text(f'ALTER TABLE {table_name} ADD PRIMARY KEY (id);'))
-    logger.success("Created primary key on id column")
+        text(f'ALTER TABLE {table_name} ADD PRIMARY KEY ({index_column});'))
+    logger.success(f"Created primary key on {index_column} column")

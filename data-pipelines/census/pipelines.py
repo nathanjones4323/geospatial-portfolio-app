@@ -1,6 +1,5 @@
 from extract import extract_2021_acs_5_year_data, extract_geography_boundaries
-from load import (create_acs_pkey, init_connection, load_boundary_data,
-                  load_data)
+from load import create_pkey, init_connection, load_boundary_data, load_data
 from loguru import logger
 from transform import clean_census_data, get_human_readable_columns
 
@@ -47,9 +46,10 @@ def run_acs_2021_zcta_pipeline():
                 f"Error writing table acs_census_2021_zcta to DB: {e}")
 
         try:
-            create_acs_pkey(conn)
+            create_pkey(conn, table_name="acs_census_2021_zcta",
+                        index_column="id")
         except Exception as e:
-            logger.error(f"Error creating primary key on id column: {e}")
+            logger.error(f"Error creating primary key: {e}")
 
         # Close DB Connection
         conn.close()
@@ -95,7 +95,8 @@ def run_acs_2021_cbsa_pipeline():
                 f"Error writing table acs_census_2021_cbsa to DB: {e}")
 
         try:
-            create_acs_pkey(conn)
+            create_pkey(conn, table_name="acs_census_2021_cbsa",
+                        index_column="id")
         except Exception as e:
             logger.error(f"Error creating primary key on id column: {e}")
 
@@ -116,9 +117,19 @@ def run_zcta_geography_boundary_pipeline():
         except Exception as e:
             logger.error(f"Error connecting to DB: {e}")
 
-        # Load Data into DB
-        load_boundary_data(zcta_geo_data, conn,
-                           table_name="zcta_boundaries_2021")
+        try:
+            # Load Data into DB
+            load_boundary_data(zcta_geo_data, conn,
+                               table_name="zcta_boundaries_2021")
+        except Exception as e:
+            logger.error(
+                f"Error writing table zcta_boundaries_2021 to DB: {e}")
+
+        try:
+            create_pkey(conn, table_name="zcta_boundaries_2021",
+                        index_column="id")
+        except Exception as e:
+            logger.error(f"Error creating primary key: {e}")
 
 
 def run_cbsa_geography_boundary_pipeline():
@@ -134,6 +145,16 @@ def run_cbsa_geography_boundary_pipeline():
         except Exception as e:
             logger.error(f"Error connecting to DB: {e}")
 
-        # Load Data into DB
-        load_boundary_data(cbsa_geo_data, conn,
-                           table_name="cbsa_boundaries_2021")
+        try:
+            # Load Data into DB
+            load_boundary_data(cbsa_geo_data, conn,
+                               table_name="cbsa_boundaries_2021")
+        except Exception as e:
+            logger.error(
+                f"Error writing table cbsa_boundaries_2021 to DB: {e}")
+
+        try:
+            create_pkey(conn, table_name="cbsa_boundaries_2021",
+                        index_column="id")
+        except Exception as e:
+            logger.error(f"Error creating primary key: {e}")
