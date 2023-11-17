@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from loguru import logger
 from pipelines import (run_acs_2021_cbsa_pipeline, run_acs_2021_zcta_pipeline,
                        run_cbsa_geography_boundary_pipeline,
+                       run_polygon_simplification_pipeline,
                        run_zcta_geography_boundary_pipeline)
 
 try:
@@ -21,3 +22,5 @@ run_acs_2021_cbsa_pipeline()
 run_zcta_geography_boundary_pipeline()
 
 run_cbsa_geography_boundary_pipeline()
+
+run_polygon_simplification_pipeline()

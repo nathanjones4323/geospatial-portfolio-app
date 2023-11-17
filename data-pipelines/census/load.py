@@ -35,4 +35,5 @@ def create_pkey(conn, table_name, index_column):
     # Create Primary Key from Index column
     conn.execute(
         text(f'ALTER TABLE {table_name} ADD PRIMARY KEY ({index_column});'))
+    conn.commit()
     logger.success(f"Created primary key on {index_column} column")

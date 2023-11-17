@@ -72,4 +72,6 @@ Once the pipelines have finished running (or if you are restarting the app), you
 - [x] Add a check to the data pipelines to see if the data has already run and if so, don't run it again
 - [ ] Fix truncating column name error ==> Postgres can only handle 63 characters for column names and this is causing duplicate column names
 - [ ] Build out Streamlit UI / functionality
+  - [ ] Rewrite `mapping.py` module
 - [ ] Speed up the data pipelines using threading
+- [ ] Clean up Dockerfiles and .env files ==> shouldn't have to specify the same environment variables in multiple places

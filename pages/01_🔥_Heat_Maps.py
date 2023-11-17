@@ -1,5 +1,6 @@
 import os
 
+import folium
 import geopandas as gpd
 import pandas as pd
 import streamlit as st
@@ -7,7 +8,6 @@ from dotenv import load_dotenv
 from streamlit_extras.app_logo import add_logo
 from streamlit_folium import folium_static
 
-from mapping import create_choropleth
 from sidebar import init_sidebar
 from utils import init_connection, reduce_top_margin
 
@@ -42,23 +42,25 @@ def app():
 
     # Fetch the data (cached for performance)
     conn = init_connection()
+
     geom_boundaries = gpd.read_postgis(
         """
-    select * from cbsa_boundaries_2021
-    """, con=conn)
-    st.write(geom_boundaries)
+    select * from cbsa_boundaries_2021_simplified
+    """, con=conn, geom_col="geometry")
+    geom_boundaries.rename(columns={"NAMELSAD": "cbsa"}, inplace=True)
+
     data = pd.read_sql(
         """
         select * from acs_census_2021_cbsa
         """, con=conn)
-    st.write(data)
 
     data = geom_boundaries.merge(data, on="cbsa", how="inner")
-    st.write(data)
 
-    # Display the map
-    m = create_choropleth(
-        data=data, target_variable="est_gross_rent_occupied_units_paying_rent_median_dollars", geom_granularity="cbsa")
+    m = folium.Map(location=[37.8, -96],
+                   zoom_start=5, tiles='CartoDB positron', scrollWheelZoom=False)
+
+    folium.GeoJson(data).add_to(m)
+
     folium_static(m)
 
 

@@ -3,7 +3,7 @@ from load import create_pkey, init_connection, load_boundary_data, load_data
 from loguru import logger
 from transform import clean_census_data, get_human_readable_columns
 
-from utils import is_table_initialized
+from utils import create_simplified_polygons, is_table_initialized
 
 
 def run_acs_2021_zcta_pipeline():
@@ -158,3 +158,32 @@ def run_cbsa_geography_boundary_pipeline():
                         index_column="id")
         except Exception as e:
             logger.error(f"Error creating primary key: {e}")
+
+
+def run_polygon_simplification_pipeline():
+    # Check if table is already initialized
+    if not is_table_initialized("cbsa_boundaries_2021_simplified"):
+        # Create DB Connection
+        try:
+            conn = init_connection()
+            logger.success("Successfully connected to DB")
+        except Exception as e:
+            logger.error(f"Error connecting to DB: {e}")
+
+        try:
+            # Create new table with simplified polygons
+            create_simplified_polygons(conn)
+            logger.success(
+                "Successfully created table cbsa_boundaries_2021_simplified")
+        except Exception as e:
+            logger.error(
+                f"Error creating table cbsa_boundaries_2021_simplified: {e}")
+
+        try:
+            create_pkey(conn, table_name="cbsa_boundaries_2021_simplified",
+                        index_column="id")
+        except Exception as e:
+            logger.error(f"Error creating primary key: {e}")
+
+        # Close DB Connection
+        conn.close()
