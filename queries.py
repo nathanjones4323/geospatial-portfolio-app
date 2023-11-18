@@ -23,13 +23,39 @@ def query_error(df):
 ################################################################################
 
 @st.cache_data(show_spinner=False)
-def load_cbsa_geom(__conn):
-    cbsa_df = gpd.read_postgis(
-        """
-    select namelsad as cbsa_name, geom from analytics.cbsa_boundaries where namelsad not like '%%, PR%%'
-    """, con=__conn, geom_col="geom")
+def load_cbsa_geom_data():
 
-    return cbsa_df
+    conn = init_connection()
+
+    geom_boundaries = gpd.read_postgis(
+        """
+    select 
+        "NAMELSAD"
+        , geometry
+    from cbsa_boundaries_2021_simplified
+    """, con=conn, geom_col="geometry")
+    geom_boundaries.rename(columns={"NAMELSAD": "cbsa"}, inplace=True)
+    # conn.close()
+
+    return geom_boundaries
+
+
+@st.cache_data(show_spinner=False)
+def load_cbsa_acs_data():
+
+    conn = init_connection()
+
+    data = pd.read_sql(
+        """
+        select 
+            cbsa
+            , est_gross_rent_occupied_units_paying_rent_median_dollars
+        from acs_census_2021_cbsa
+        """, con=conn)
+
+    # conn.close()
+
+    return data
 
 
 @st.cache_data(show_spinner=False, ttl=3600*24)

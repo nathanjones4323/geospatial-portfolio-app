@@ -3,9 +3,10 @@ import os
 import pandas as pd
 from loguru import logger
 from sqlalchemy import create_engine, text
+from sqlalchemy.engine.base import Connection
 
 
-def init_connection():
+def init_connection() -> Connection:
     db_user = os.getenv('POSTGRES_USER')
     db_pass = os.getenv('POSTGRES_PASSWORD')
     db_host = os.getenv('POSTGRES_HOST')
@@ -32,6 +33,11 @@ def load_boundary_data(data, conn, table_name):
 
 
 def create_pkey(conn, table_name, index_column):
+    try:
+        conn = init_connection()
+        logger.success("Successfully connected to DB")
+    except Exception as e:
+        logger.error(f"Error connecting to DB: {e}")
     # Create Primary Key from Index column
     conn.execute(
         text(f'ALTER TABLE {table_name} ADD PRIMARY KEY ({index_column});'))

@@ -24,66 +24,19 @@ def init_connection() -> Engine:
     db_name = os.environ['POSTGRES_DB']
 
     conn_string = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
-    engine = create_engine(url=conn_string).connect()
+    engine = create_engine(url=conn_string)
 
     return engine
 
 
-def monetize(df, column_list):
-    """Appends a new column for each series to the original dataframe with a formatted dollar amount rounded to cents.
+def title_case_columns(columns: list) -> list:
+    """Converts a list of column names to title case
 
     Args:
-        df (pandas.DataFrame): pandas Dataframe of desired columns to format in dollars.
+        columns (list): A list of column names
+
+    Returns:
+        list: A list of column names in title case
     """
-    for series in df[column_list]:
-        if series == "major_region" or series == "cbsa_name" or series == "zcta":
-            df[f"{series}_formatted"] = df[series]
-        else:
-            df[f"{series}_formatted"] = df[series].apply(lambda x: '-' if (x is None or isnull(
-                x)) else ('-$ {:,.2f}'.format(abs(x)) if x < 0 else '$ {:,.2f}'.format(x)))
-    return df
-
-
-def percentize(df, column_list):
-    """Appends a new column for each series to the original dataframe with a formatted percentage rounded to 2 decimals.
-
-    Args:
-        df (pandas.DataFrame): pandas Dataframe of desired columns to format as a percentage
-    """
-    for series in df[column_list]:
-        if series == "major_region" or series == "cbsa_name" or series == "zcta":
-            df[f"{series}_formatted"] = df[series]
-        else:
-            df[f"{series}_formatted"] = df[series].apply(
-                lambda x: '-' if (x is None or isnull(x)) else ('{:,.2f}%'.format(x)))
-    return df
-
-
-def format(df, column_list):
-    """Appends a new column for each series to the original dataframe with a comma formatted number rounded to nearest integer.
-
-    Args:
-        df (pandas.DataFrame): pandas Dataframe of desired columns to format
-    """
-    for series in df[column_list]:
-        if series == "major_region" or series == "cbsa_name" or series == "zcta":
-            df[f"{series}_formatted"] = df[series]
-        else:
-            df[f"{series}_formatted"] = df[series].apply(
-                lambda x: '-' if (x is None or isnull(x)) else ('{:,}'.format(int(x))))
-    return df
-
-
-def float_format(df, column_list):
-    """Appends a new column for each series to the original dataframe with a comma formatted number rounded to 2 decimal places.
-
-    Args:
-        df (pandas.DataFrame): pandas Dataframe of desired columns to format
-    """
-    for series in df[column_list]:
-        if series == "major_region" or series == "cbsa_name" or series == "zcta":
-            df[f"{series}_formatted"] = df[series]
-        else:
-            df[f"{series}_formatted"] = df[series].apply(
-                lambda x: '-' if (x is None or isnull(x)) else ('{:,.2f}'.format(x)))
-    return df
+    columns = [x.replace('_', ' ').strip().title() for x in columns]
+    return columns
