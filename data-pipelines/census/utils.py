@@ -10,7 +10,7 @@ def is_table_initialized(table_name: str) -> bool:
         query = f"select id from {table_name} limit 1"
         df = pd.read_sql(query, conn)
         if df.empty:
-            logger.warning(
+            logger.info(
                 f"Data for {table_name} not found in the DB, running data pipeline...")
             conn.close()
             return False
@@ -22,7 +22,7 @@ def is_table_initialized(table_name: str) -> bool:
 
     except exc.ProgrammingError as e:
         # Handle the case where the table does not exist
-        logger.warning(
+        logger.info(
             f"Table {table_name} does not exist in the DB. Running data pipeline...")
         conn.close()
         return False
@@ -55,8 +55,6 @@ def create_simplified_polygons(conn, tolerance=0.001):
         from cbsa_boundaries_2021
     );
     """
-    # Log the executed query
-    logger.debug(query)
 
     conn.execute(text(query))
     conn.commit()
