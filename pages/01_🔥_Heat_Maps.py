@@ -1,18 +1,14 @@
 import os
 
-import branca
-import folium
-import geopandas as gpd
 import pandas as pd
 import streamlit as st
 from dotenv import load_dotenv
 from streamlit_extras.app_logo import add_logo
-from streamlit_folium import st_folium
 
-from mapping import create_choropleth, create_colormap
+from mapping import create_choropleth
 from queries import load_cbsa_acs_data, load_cbsa_geom_data
 from sidebar import init_sidebar
-from utils import init_connection, reduce_top_margin
+from utils import reduce_top_margin
 
 st.set_page_config(
     page_title="Heat Maps",
@@ -38,8 +34,10 @@ def app():
     st.markdown(
         """
         This page contains heat maps of the United States. The maps are interactive, so you can zoom in and out and click on the different regions to see the data for that region. 
-        
-        You can also search for a specific location using the search bar in the bottom right corner of the map. The maps are based on the [Selected Housing Characterisitcs dataset from the American Community Survey](https://data.census.gov/table/ACSDP5Y2021.DP04) put together by the [Census Bureau](https://www.census.gov/).
+        To zoom in and out, use the scroll wheel on your mouse, double click on the map, or use the zoom buttons in the top right corner of the map.
+
+        You can also search for a specific location using the search bar in the bottom right corner of the map. 
+        The maps are based on the [Selected Housing Characterisitcs dataset from the American Community Survey](https://data.census.gov/table/ACSDP5Y2021.DP04) put together by the [Census Bureau](https://www.census.gov/).
         """)
 
     # Initalize the sidebar

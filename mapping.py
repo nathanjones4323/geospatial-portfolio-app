@@ -1,8 +1,8 @@
-from typing import Literal
-
 import branca
 import folium
 import geopandas as gpd
+import pydeck as pdk
+import streamlit as st
 from folium.plugins import Geocoder
 from streamlit_folium import st_folium
 
@@ -51,7 +51,7 @@ def create_choropleth(data: gpd.GeoDataFrame, target_column: str, height: int = 
 
     # Create the folium map
     m = folium.Map(location=[37.8, -96],
-                   zoom_start=5, tiles='CartoDB positron', scrollWheelZoom=False)
+                   zoom_start=5, tiles='CartoDB positron', scrollWheelZoom=True)
 
     # Define the colormap
     colormap = create_colormap(data=data,
@@ -115,3 +115,53 @@ def create_choropleth(data: gpd.GeoDataFrame, target_column: str, height: int = 
                     height=height, returned_objects=[])
 
     return map
+
+
+def create_3d_map(data: gpd.GeoDataFrame, target_column: str) -> None:
+    # Get the min and max values for setting elevation and fill color
+    min_value = data[target_column].min()
+    max_value = data[target_column].max()
+
+    # Normalize to a range between 0 and 1
+    normalized_elevation = f"({target_column} - {min_value}) / ({max_value - min_value})"
+    elevation = f"200000 * {normalized_elevation}"
+    fill_color_scaler = f"{normalized_elevation}"
+
+    # Create GeoJsonLayer using Pydeck
+    geojson_layer = pdk.Layer(
+        "GeoJsonLayer",
+        data=data,
+        opacity=1,
+        stroked=True,
+        filled=True,
+        extruded=True,
+        wireframe=True,
+        get_elevation=elevation,
+        get_fill_color=f"[255, 255 - {fill_color_scaler} * 255, 255 - {fill_color_scaler} * 255]",
+        get_line_color=[255, 255, 255],
+        pickable=True
+    )
+
+    # Define the viewport for the map
+    view_state = pdk.ViewState(
+        latitude=37.8,
+        longitude=-96,
+        zoom=3,
+        pitch=90
+    )
+
+    # Create the Pydeck Deck
+    r = pdk.Deck(layers=[geojson_layer],
+                 initial_view_state=view_state,
+                 tooltip={
+        "html": f"<b>{{cbsa}}</b><br/>Median Rent ${{{target_column}}}",
+        "style": {
+            "backgroundColor": "steelblue",
+            "color": "white"
+        }
+    },
+        map_style="light"
+    )
+
+    # Render the map in Streamlit
+    return st.pydeck_chart(r)
