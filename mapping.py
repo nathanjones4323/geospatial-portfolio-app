@@ -50,8 +50,8 @@ def add_map_plugins(m):
 def create_choropleth(data: gpd.GeoDataFrame, target_column: str, height: int = 500, aliases: list = None, colormap_caption: str = None) -> dict:
 
     # Create the folium map
-    m = folium.Map(location=[37.8, -96],
-                   zoom_start=5, tiles='CartoDB positron', scrollWheelZoom=True)
+    m = folium.Map(location=[35.3, -97.6], zoom_start=4,
+                   tiles='CartoDB positron', scrollWheelZoom=True)
 
     # Define the colormap
     colormap = create_colormap(data=data,
@@ -144,10 +144,10 @@ def create_3d_map(data: gpd.GeoDataFrame, target_column: str) -> None:
 
     # Define the viewport for the map
     view_state = pdk.ViewState(
-        latitude=37.8,
-        longitude=-96,
-        zoom=3,
-        pitch=90
+        latitude=35.3,
+        longitude=-97.6,
+        zoom=4,
+        pitch=45
     )
 
     # Create the Pydeck Deck
