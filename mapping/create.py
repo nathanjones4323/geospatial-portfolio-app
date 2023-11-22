@@ -1,3 +1,5 @@
+from typing import Literal
+
 import branca
 import folium
 import geopandas as gpd
@@ -9,7 +11,7 @@ from streamlit_folium import st_folium
 from utils import title_case_columns
 
 
-def create_colormap(data: gpd.GeoDataFrame, target_column: str, colormap_caption: str, colormap_colors: list = ["red", "orange", "lightblue", "green", "darkgreen"]) -> branca.colormap.LinearColormap:
+def create_colormap(data: gpd.GeoDataFrame, target_column: str, colormap_caption: str, colormap_colors: list = ["#990000", "#fff7ec"]) -> branca.colormap.LinearColormap:
     """Create a colormap for a choropleth map.
 
     Args:
@@ -117,7 +119,7 @@ def create_choropleth(data: gpd.GeoDataFrame, target_column: str, height: int = 
     return map
 
 
-def create_3d_map(data: gpd.GeoDataFrame, target_column: str) -> None:
+def create_3d_map(data: gpd.GeoDataFrame, target_column: str, geographic_granularity: Literal["cbsa", "zcta"] = "cbsa") -> None:
     # Get the min and max values for setting elevation and fill color
     min_value = data[target_column].min()
     max_value = data[target_column].max()
@@ -154,7 +156,7 @@ def create_3d_map(data: gpd.GeoDataFrame, target_column: str) -> None:
     r = pdk.Deck(layers=[geojson_layer],
                  initial_view_state=view_state,
                  tooltip={
-        "html": f"<b>{{cbsa}}</b><br/>Median Rent ${{{target_column}}}",
+        "html": f"<b>{{{geographic_granularity}}}</b><br/>Median Rent ${{{target_column}}}",
         "style": {
             "backgroundColor": "steelblue",
             "color": "white"

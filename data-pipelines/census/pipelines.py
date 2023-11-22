@@ -161,29 +161,32 @@ def run_cbsa_geography_boundary_pipeline():
 
 
 def run_polygon_simplification_pipeline():
-    # Check if table is already initialized
-    if not is_table_initialized("cbsa_boundaries_2021_simplified"):
-        # Create DB Connection
-        try:
-            conn = init_connection()
-            logger.success("Successfully connected to DB")
-        except Exception as e:
-            logger.error(f"Error connecting to DB: {e}")
+    for geography in ["ZCTA", "CBSA"]:
+        table_name = f"{geography.lower()}_boundaries_2021_simplified"
+        # Check if table is already initialized
+        if not is_table_initialized(table_name):
+            # Create DB Connection
+            try:
+                conn = init_connection()
+                logger.success("Successfully connected to DB")
+            except Exception as e:
+                logger.error(f"Error connecting to DB: {e}")
 
-        try:
-            # Create new table with simplified polygons
-            create_simplified_polygons(conn)
-            logger.success(
-                "Successfully created table cbsa_boundaries_2021_simplified")
-        except Exception as e:
-            logger.error(
-                f"Error creating table cbsa_boundaries_2021_simplified: {e}")
+            try:
+                # Create new table with simplified polygons
+                create_simplified_polygons(
+                    conn, tolerance=0.001, geographic_granularity=geography)
+                logger.success(
+                    f"Successfully created table {table_name}")
+            except Exception as e:
+                logger.error(
+                    f"Error creating table {table_name}: {e}")
 
-        try:
-            create_pkey(conn, table_name="cbsa_boundaries_2021_simplified",
-                        index_column="id")
-        except Exception as e:
-            logger.error(f"Error creating primary key: {e}")
+            try:
+                create_pkey(conn, table_name=table_name,
+                            index_column="id")
+            except Exception as e:
+                logger.error(f"Error creating primary key: {e}")
 
-        # Close DB Connection
-        conn.close()
+            # Close DB Connection
+            conn.close()

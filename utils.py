@@ -40,3 +40,11 @@ def title_case_columns(columns: list) -> list:
     """
     columns = [x.replace('_', ' ').strip().title() for x in columns]
     return columns
+
+
+def get_metric_internal_name(display_name):
+    mapping = {
+        "Median Rent Price ($)": "est_gross_rent_occupied_units_paying_rent_median_dollars"
+        # Add more mappings here as needed
+    }
+    return mapping.get(display_name, display_name)
