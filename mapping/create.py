@@ -11,7 +11,7 @@ from streamlit_folium import st_folium
 from utils import title_case_columns
 
 
-def create_colormap(data: gpd.GeoDataFrame, target_column: str, colormap_caption: str, colormap_colors: list = ["#990000", "#fff7ec"]) -> branca.colormap.LinearColormap:
+def create_colormap(data: gpd.GeoDataFrame, target_column: str, colormap_caption: str, colormap_colors: list = ["#fff7ec", "#990000"]) -> branca.colormap.LinearColormap:
     """Create a colormap for a choropleth map.
 
     Args:
@@ -151,12 +151,11 @@ def create_3d_map(data: gpd.GeoDataFrame, target_column: str, geographic_granula
         zoom=4,
         pitch=45
     )
-
     # Create the Pydeck Deck
     r = pdk.Deck(layers=[geojson_layer],
                  initial_view_state=view_state,
                  tooltip={
-        "html": f"<b>{{{geographic_granularity}}}</b><br/>Median Rent ${{{target_column}}}",
+        "html": f"<b>{geographic_granularity.upper()}: {{{geographic_granularity}}}</b><br/><b>Median Rent Price ($)</b> {{{target_column}}}",
         "style": {
             "backgroundColor": "steelblue",
             "color": "white"

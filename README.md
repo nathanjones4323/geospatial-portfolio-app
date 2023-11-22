@@ -71,9 +71,12 @@ Once the pipelines have finished running (or if you are restarting the app), you
 ### In Progress
 
 - [ ] Build out Streamlit UI / functionality
+  - [ ] Fix choropleth color scale => All geographies look the same color, but we should be able to see the difference between them
+  - [ ] Add interpretation of the 3D map => What does the height/color of the buildings represent?
   - [ ] Either make the user filter when ZCTA is selected, or simplify the polygon data so that it can be loaded into the UI without crashing it.
   - [ ] Add `st.dataframe` tables to accompany the maps
   - [ ] Add the rest of the metrics (might depend on fixing the truncating column name error)
+  - [ ] Make the pydeck tooltip parameter dynamic based on UI selections
 
 ### Future
 
