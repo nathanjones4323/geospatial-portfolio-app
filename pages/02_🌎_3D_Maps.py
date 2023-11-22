@@ -6,10 +6,12 @@ import streamlit as st
 from dotenv import load_dotenv
 from streamlit_extras.app_logo import add_logo
 
-from mapping import create_3d_map
-from queries import load_cbsa_acs_data, load_cbsa_geom_data
+from mapping.create import create_3d_map
+from mapping.utils import get_geographic_mapping
+from queries.boundaries import load_cbsa_geom_data, load_zcta_geom
+from queries.data import load_cbsa_acs_data, load_zcta_acs_data
 from sidebar import init_sidebar
-from utils import reduce_top_margin
+from utils import get_metric_internal_name, reduce_top_margin
 
 st.set_page_config(
     page_title="3D Maps",
@@ -34,31 +36,41 @@ def app():
     st.title('🌎 3D Maps')
     st.markdown(
         """
-        This page shows the same maps as the Heat Maps page, but in 3D. 
-        The maps are interactive, so you can zoom in and out and hover over the different regions to see the data for that region.
+    **Explore 3D Maps of the United States!**
 
-        To zoom in and out, use the scroll wheel on your mouse, double click on the map, or use the zoom buttons in the top right corner of the map.
-        To tilt the map, hold down the shift key and click and drag the map.
-        The maps are based on the [Selected Housing Characterisitcs dataset from the American Community Survey](https://data.census.gov/table/ACSDP5Y2021.DP04) put together by the [Census Bureau](https://www.census.gov/).
-        """)
+    Dive into interactive 3D maps where you can:
+
+    - Zoom in and out by using the scroll wheel on your mouse, double-clicking on the map, or using the zoom buttons in the top right corner.
+    
+    - Hover over different regions to view detailed data for that area.
+
+    - Tilt the map by holding down the shift key and clicking and dragging.
+
+    **Data Source:**
+    
+    The 3D maps are based on the [Selected Housing Characteristics dataset](https://data.census.gov/table/ACSDP5Y2021.DP04) from the American Community Survey, compiled by the [Census Bureau](https://www.census.gov/).
+    """
+    )
 
     # Initalize the sidebar
-    init_sidebar()
+    metric_display_name, geographic_granularity, submitted1 = init_sidebar()
+    metric_internal_name = get_metric_internal_name(metric_display_name)
 
-    # Load boundary data
-    geom_boundaries = load_cbsa_geom_data()
-    geom_boundaries.rename(columns={"NAMELSAD": "cbsa"}, inplace=True)
+    # Get mapping information
+    granularity_info = get_geographic_mapping(geographic_granularity)
+    if granularity_info:
+        geom_boundaries = granularity_info["geom_function"]()
+        data = granularity_info["data_function"]()
 
-    # Load ACS data
-    data = load_cbsa_acs_data()
+        # Clean the data
+        data[metric_internal_name] = pd.to_numeric(
+            data[metric_internal_name], errors="coerce")
+        data = geom_boundaries.merge(
+            data, on=granularity_info["on_column"], how="inner")
 
-    # Convert the `est_gross_rent_occupied_units_paying_rent_median_dollars` column to numeric
-    data["est_gross_rent_occupied_units_paying_rent_median_dollars"] = pd.to_numeric(
-        data["est_gross_rent_occupied_units_paying_rent_median_dollars"], errors="coerce")
-    data = geom_boundaries.merge(data, on="cbsa", how="inner")
-
-    create_3d_map(
-        data=data, target_column="est_gross_rent_occupied_units_paying_rent_median_dollars")
+        # Create the 3D map
+        create_3d_map(data=data, target_column=metric_internal_name,
+                      geographic_granularity=granularity_info["on_column"])
 
 
 app()

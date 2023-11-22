@@ -68,10 +68,28 @@ Once the pipelines have finished running (or if you are restarting the app), you
 
 ## 🗒️ TODO <a name = "todo"></a>
 
-- [x] Add CBSA data to the data pipelines
-- [x] Add a check to the data pipelines to see if the data has already run and if so, don't run it again
-- [ ] Fix truncating column name error ==> Postgres can only handle 63 characters for column names and this is causing duplicate column names
+### In Progress
+
 - [ ] Build out Streamlit UI / functionality
-  - [ ] Rewrite `mapping.py` module
+  - [ ] Fix choropleth color scale => All geographies look the same color, but we should be able to see the difference between them
+  - [ ] Add interpretation of the 3D map => What does the height/color of the buildings represent?
+  - [ ] Either make the user filter when ZCTA is selected, or simplify the polygon data so that it can be loaded into the UI without crashing it.
+  - [ ] Add `st.dataframe` tables to accompany the maps
+  - [ ] Add the rest of the metrics (might depend on fixing the truncating column name error)
+  - [ ] Make the pydeck tooltip parameter dynamic based on UI selections
+
+### Future
+
+- [ ] Fix truncating column name error ==> Postgres can only handle 63 characters for column names and this is causing duplicate column names
+- [ ] Add query parameters so users can share links to specific views of the app
+- [ ] Make a tutorial on how to use the app
 - [ ] Speed up the data pipelines using threading
 - [ ] Clean up Dockerfiles and .env files ==> shouldn't have to specify the same environment variables in multiple places
+
+### Completed
+
+- [x] Add CBSA data to the data pipelines
+- [x] Add a check to the data pipelines to see if the data has already run and if so, don't run it again
+- [x] Fix memory error ==> the data pipelines are running out of memory when trying to load the ZCTA boundary data into the database
+  - Fixed by writing the writing the data in chunks instead of all at once
+- [x] Rewrite `mapping.py` module

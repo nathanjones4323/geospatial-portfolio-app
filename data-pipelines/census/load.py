@@ -28,7 +28,7 @@ def load_data(data, conn, table_name):
 
 def load_boundary_data(data, conn, table_name):
     data.to_postgis(table_name, conn,
-                    if_exists='fail', index=True, index_label='id')
+                    if_exists='fail', index=True, index_label='id', chunksize=100)
     logger.success(f"Successfully wrote table {table_name} to DB")
 
 

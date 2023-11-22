@@ -32,8 +32,8 @@ def is_table_initialized(table_name: str) -> bool:
         return False
 
 
-def create_simplified_polygons(conn, tolerance=0.001):
-    """Creates a simplified version of the polygons to use for mapping
+def simplify_cbsa_polygons(conn, tolerance=0.001):
+    """Creates a simplified version of the CBSA polygons using the Douglas-Peucker algorithm
     """
     query = f"""
     create table if not exists cbsa_boundaries_2021_simplified as (
@@ -63,3 +63,43 @@ def create_simplified_polygons(conn, tolerance=0.001):
         "create index on cbsa_boundaries_2021_simplified using gist(geometry);"))
     conn.commit()
     conn.close()
+
+
+def simplify_zcta_polygons(conn, tolerance=0.001):
+    """Creates a simplified version of the ZCTA polygons using the Douglas-Peucker algorithm
+    """
+    query = f"""
+        create table if not exists zcta_boundaries_2021_simplified as (
+            select
+                id,
+                "ZCTA5CE20",
+                "GEOID20",
+                "CLASSFP20",
+                "MTFCC20",
+                "FUNCSTAT20",
+                "ALAND20",
+                "AWATER20",
+                "INTPTLAT20",
+                "INTPTLON20",
+                ST_SimplifyPreserveTopology(geometry, {tolerance}) AS geometry
+            from zcta_boundaries_2021
+        );
+        """
+
+    conn.execute(text(query))
+    conn.commit()
+
+    conn.execute(text(
+        "create index on zcta_boundaries_2021_simplified using gist(geometry);"))
+    conn.commit()
+    conn.close()
+
+
+def create_simplified_polygons(conn, tolerance=0.001, geographic_granularity="CBSA"):
+    """Creates a simplified version of the polygons to use for mapping
+    """
+    if geographic_granularity == "CBSA":
+        simplify_cbsa_polygons(conn, tolerance=tolerance)
+
+    elif geographic_granularity == "ZCTA":
+        simplify_zcta_polygons(conn, tolerance=tolerance)

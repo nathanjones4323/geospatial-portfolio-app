@@ -5,10 +5,12 @@ import streamlit as st
 from dotenv import load_dotenv
 from streamlit_extras.app_logo import add_logo
 
-from mapping import create_choropleth
-from queries import load_cbsa_acs_data, load_cbsa_geom_data
+from mapping.create import create_choropleth
+from mapping.utils import get_geographic_mapping
+from queries.boundaries import load_cbsa_geom_data, load_zcta_geom
+from queries.data import load_cbsa_acs_data, load_zcta_acs_data
 from sidebar import init_sidebar
-from utils import reduce_top_margin
+from utils import get_metric_internal_name, reduce_top_margin
 
 st.set_page_config(
     page_title="Heat Maps",
@@ -33,34 +35,45 @@ def app():
     st.title('🔥 Heat Maps')
     st.markdown(
         """
-        This page contains heat maps of the United States. The maps are interactive, so you can zoom in and out and click on the different regions to see the data for that region. 
-        To zoom in and out, use the scroll wheel on your mouse, double click on the map, or use the zoom buttons in the top right corner of the map.
+    **Welcome to Heat Maps of the United States!**
 
-        You can also search for a specific location using the search bar in the bottom right corner of the map. 
-        The maps are based on the [Selected Housing Characterisitcs dataset from the American Community Survey](https://data.census.gov/table/ACSDP5Y2021.DP04) put together by the [Census Bureau](https://www.census.gov/).
-        """)
+    Explore interactive maps where you can:
+    
+    - Zoom in and out by using the scroll wheel on your mouse, double-clicking on the map, or using the zoom buttons in the top right corner.
+    
+    - Click on different regions to view detailed data for that area.
+    
+    - Search for a specific location using the search bar in the bottom right corner.
+
+    **Data Source:**
+    
+    The maps are based on the [Selected Housing Characteristics dataset](https://data.census.gov/table/ACSDP5Y2021.DP04) from the American Community Survey, compiled by the [Census Bureau](https://www.census.gov/).
+    """
+    )
 
     # Initalize the sidebar
-    init_sidebar()
+    metric_display_name, geographic_granularity, submitted1 = init_sidebar()
+    metric_internal_name = get_metric_internal_name(metric_display_name)
 
-    # Load boundary data
-    geom_boundaries = load_cbsa_geom_data()
-    geom_boundaries.rename(columns={"NAMELSAD": "cbsa"}, inplace=True)
+    # Get mapping information
+    granularity_info = get_geographic_mapping(geographic_granularity)
+    if granularity_info:
+        geom_boundaries = granularity_info["geom_function"]()
+        data = granularity_info["data_function"]()
 
-    # Load ACS data
-    data = load_cbsa_acs_data()
+        # Clean the data
+        data[metric_internal_name] = pd.to_numeric(
+            data[metric_internal_name], errors="coerce")
+        data = geom_boundaries.merge(
+            data, on=granularity_info["on_column"], how="inner")
 
-    # Convert the `est_gross_rent_occupied_units_paying_rent_median_dollars` column to numeric
-    data["est_gross_rent_occupied_units_paying_rent_median_dollars"] = pd.to_numeric(
-        data["est_gross_rent_occupied_units_paying_rent_median_dollars"], errors="coerce")
-    data = geom_boundaries.merge(data, on="cbsa", how="inner")
-
-    # Create the choropleth
-    create_choropleth(data=data,
-                      target_column="est_gross_rent_occupied_units_paying_rent_median_dollars",
-                      height=600,
-                      aliases=["CBSA", "Median Gross Rent ($)"],
-                      colormap_caption="Median Gross Rent ($)")
+        # Create the choropleth
+        create_choropleth(data=data,
+                          target_column=metric_internal_name,
+                          height=600,
+                          aliases=[geographic_granularity,
+                                   metric_display_name],
+                          colormap_caption=metric_display_name)
 
 
 app()
