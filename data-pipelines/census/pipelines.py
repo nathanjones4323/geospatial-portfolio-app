@@ -39,7 +39,7 @@ def run_acs_2021_zcta_pipeline():
 
         try:
             data = data[[
-                "zcta", "est_gross_rent_occupied_units_paying_rent_median_dollars"]]
+                "zcta", "est_gross_rent_occupied_units_paying_rent_median_dollars", "percent_housing_tenure_occupied_housing_units_renter_occupied"]]
             load_data(data, conn, table_name="acs_census_2021_zcta")
         except Exception as e:
             logger.error(
@@ -88,7 +88,7 @@ def run_acs_2021_cbsa_pipeline():
 
         try:
             data = data[[
-                "cbsa", "est_gross_rent_occupied_units_paying_rent_median_dollars"]]
+                "cbsa", "est_gross_rent_occupied_units_paying_rent_median_dollars", "percent_housing_tenure_occupied_housing_units_renter_occupied"]]
             load_data(data, conn, table_name="acs_census_2021_cbsa")
         except Exception as e:
             logger.error(

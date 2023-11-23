@@ -11,7 +11,7 @@ from streamlit_folium import st_folium
 from utils import title_case_columns
 
 
-def create_colormap(data: gpd.GeoDataFrame, target_column: str, colormap_caption: str, colormap_colors: list = ["#fff7ec", "#990000"]) -> branca.colormap.LinearColormap:
+def create_colormap(data: gpd.GeoDataFrame, target_column: str, colormap_caption: str, colormap_colors: list = ['#ffffff', '#f9e3e3', '#f4c6c6', '#eeaaaa', '#e88e8e', '#e27272', '#dd5555', '#d73939']) -> branca.colormap.LinearColormap:
     """Create a colormap for a choropleth map.
 
     Args:
@@ -29,9 +29,9 @@ def create_colormap(data: gpd.GeoDataFrame, target_column: str, colormap_caption
 
     # Define the colormap
     colormap = branca.colormap.LinearColormap(
+        colors=colormap_colors,
         vmin=data[target_column].quantile(0.0),
         vmax=data[target_column].quantile(1),
-        colors=colormap_colors,
         caption=colormap_caption
     )
     return colormap
@@ -97,7 +97,7 @@ def create_choropleth(data: gpd.GeoDataFrame, target_column: str, height: int = 
             if x["properties"][target_column] is not None
             else "transparent",
             "color": "black",
-            "fillOpacity": 0.4,
+            "fillOpacity": 1,
         },
         tooltip=tooltip,
         popup=popup,

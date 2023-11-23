@@ -44,7 +44,7 @@ def title_case_columns(columns: list) -> list:
 
 def get_metric_internal_name(display_name):
     mapping = {
-        "Median Rent Price ($)": "est_gross_rent_occupied_units_paying_rent_median_dollars"
-        # Add more mappings here as needed
+        "Median Rent Price ($)": "est_gross_rent_occupied_units_paying_rent_median_dollars",
+        "Renter Occupied Housing (%)": "percent_housing_tenure_occupied_housing_units_renter_occupied"
     }
     return mapping.get(display_name, display_name)
