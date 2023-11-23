@@ -14,8 +14,9 @@ def load_cbsa_acs_data():
         select 
             cbsa
             , est_gross_rent_occupied_units_paying_rent_median_dollars
+            , percent_housing_tenure_occupied_housing_units_renter_occupied
         from acs_census_2021_cbsa
-        where est_gross_rent_occupied_units_paying_rent_median_dollars is not null
+        -- where est_gross_rent_occupied_units_paying_rent_median_dollars is not null
         """, con=conn)
 
     return data
@@ -31,8 +32,9 @@ def load_zcta_acs_data():
         select 
             zcta
             , est_gross_rent_occupied_units_paying_rent_median_dollars
+            , percent_housing_tenure_occupied_housing_units_renter_occupied
         from acs_census_2021_zcta
-        where est_gross_rent_occupied_units_paying_rent_median_dollars is not null
+        -- where est_gross_rent_occupied_units_paying_rent_median_dollars is not null
         """, con=conn)
 
     # conn.close()
