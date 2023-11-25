@@ -71,12 +71,10 @@ Once the pipelines have finished running (or if you are restarting the app), you
 ### In Progress
 
 - [ ] Build out Streamlit UI / functionality
-  - [ ] Fix choropleth color scale => All geographies look the same color, but we should be able to see the difference between them
-  - [ ] Add interpretation of the 3D map => What does the height/color of the buildings represent?
-  - [ ] Either make the user filter when ZCTA is selected, or simplify the polygon data so that it can be loaded into the UI without crashing it.
-  - [ ] Add `st.dataframe` tables to accompany the maps
   - [ ] Add the rest of the metrics (might depend on fixing the truncating column name error)
-  - [ ] Make the pydeck tooltip parameter dynamic based on UI selections
+  - [ ] Update the metric descriptions on the homepage (Datast Description)
+  - [ ] Either make the user filter when ZCTA is selected, or simplify the polygon data so that it can be loaded into the UI without crashing it.
+  - [ ] Add drill down functionality to the map for CBSA --> ZCTA on click
 
 ### Future
 
@@ -85,6 +83,13 @@ Once the pipelines have finished running (or if you are restarting the app), you
 - [ ] Make a tutorial on how to use the app
 - [ ] Speed up the data pipelines using threading
 - [ ] Clean up Dockerfiles and .env files ==> shouldn't have to specify the same environment variables in multiple places
+- [ ] Make a function for adding a new metric
+  - Current process:
+    - Find the truncated column name for the metric using `standardize_column_name` from `transform.py`
+    - Add the metric internal name (and rename if neeed) to filter from data pipeline in `run_acs_2021_cbsa_pipeline` and `run_acs_2021_zcta_pipeline` from `pipelines.py`
+    - Add mapping inside of `get_metric_internal_name` from `utils.py` using the metric display name as the key and the internal name as the values
+    - Add the metric internal name inside of `queries.py`
+    - Define metric display name inside of the `options` for the multiselect widget in `siebar.py`
 
 ### Completed
 
@@ -93,3 +98,10 @@ Once the pipelines have finished running (or if you are restarting the app), you
 - [x] Fix memory error ==> the data pipelines are running out of memory when trying to load the ZCTA boundary data into the database
   - Fixed by writing the writing the data in chunks instead of all at once
 - [x] Rewrite `mapping.py` module
+- [ ] Build out Streamlit UI / functionality
+  - [x] Fix choropleth color scale => All geographies look the same color, but we should be able to see the difference between them
+  - [x] Add interpretation of the 3D map => What does the height/color of the buildings represent?
+  - [x] Add `st.dataframe` tables to accompany the maps
+  - [x] Make the pydeck tooltip parameter dynamic based on UI selections
+
+  #### Notes

@@ -26,6 +26,13 @@ def run_acs_2021_zcta_pipeline():
         try:
             data = get_human_readable_columns(
                 "https://api.census.gov/data/2021/acs/acs5/profile/variables.json", data)
+            # Do some manual column cleaning to avoid PostgreSQL errors
+
+            data.rename(columns={
+                "percent_house_heating_fuel_occupied_housing_units_bottled_tank_or_lp_gas": "percent_house_heating_fuel_occupied_housing_units_gas_tank",
+                "percent_house_heating_fuel_occupied_housing_units_fuel_oil_kerosene_etc.": "percent_house_heating_fuel_occupied_housing_units_fuel_oil"
+            }, inplace=True)
+
             logger.success("Data columns cleaned successfully")
         except Exception as e:
             logger.error(f"Error cleaning data columns: {e}")
@@ -39,7 +46,20 @@ def run_acs_2021_zcta_pipeline():
 
         try:
             data = data[[
-                "zcta", "est_gross_rent_occupied_units_paying_rent_median_dollars", "percent_housing_tenure_occupied_housing_units_renter_occupied"]]
+                "zcta",
+                "est_gross_rent_occupied_units_paying_rent_median_dollars",
+                "percent_housing_tenure_occupied_housing_units_renter_occupied",
+                "percent_house_heating_fuel_occupied_housing_units_electricity",
+                "percent_house_heating_fuel_occupied_housing_units_other_fuel",
+                "percent_house_heating_fuel_occupied_housing_units_fuel_oil",
+                "percent_house_heating_fuel_occupied_housing_units_no_fuel_used",
+                "percent_house_heating_fuel_occupied_housing_units_coal_or_coke",
+                "percent_house_heating_fuel_occupied_housing_units_solar_energy",
+                "percent_house_heating_fuel_occupied_housing_units_wood",
+                "percent_house_heating_fuel_occupied_housing_units_gas_tank",
+                "est_value_owner_occupied_units_median_dollars"
+            ]]
+            logger.debug(f"Columns:\n{data.columns}")
             load_data(data, conn, table_name="acs_census_2021_zcta")
         except Exception as e:
             logger.error(
@@ -75,6 +95,13 @@ def run_acs_2021_cbsa_pipeline():
         try:
             data = get_human_readable_columns(
                 "https://api.census.gov/data/2021/acs/acs5/profile/variables.json", data)
+
+            # Do some manual column cleaning to avoid PostgreSQL errors
+            data.rename(columns={
+                "percent_house_heating_fuel_occupied_housing_units_bottled_tank_or_lp_gas": "percent_house_heating_fuel_occupied_housing_units_gas_tank",
+                "percent_house_heating_fuel_occupied_housing_units_fuel_oil_kerosene_etc.": "percent_house_heating_fuel_occupied_housing_units_fuel_oil"
+            }, inplace=True)
+
             logger.success("Data columns cleaned successfully")
         except Exception as e:
             logger.error(f"Error cleaning data columns: {e}")
@@ -87,8 +114,21 @@ def run_acs_2021_cbsa_pipeline():
             logger.error(f"Error connecting to DB: {e}")
 
         try:
+            # Select only the columns we want
             data = data[[
-                "cbsa", "est_gross_rent_occupied_units_paying_rent_median_dollars", "percent_housing_tenure_occupied_housing_units_renter_occupied"]]
+                "cbsa",
+                "est_gross_rent_occupied_units_paying_rent_median_dollars",
+                "percent_housing_tenure_occupied_housing_units_renter_occupied",
+                "percent_house_heating_fuel_occupied_housing_units_electricity",
+                "percent_house_heating_fuel_occupied_housing_units_other_fuel",
+                "percent_house_heating_fuel_occupied_housing_units_fuel_oil",
+                "percent_house_heating_fuel_occupied_housing_units_no_fuel_used",
+                "percent_house_heating_fuel_occupied_housing_units_coal_or_coke",
+                "percent_house_heating_fuel_occupied_housing_units_solar_energy",
+                "percent_house_heating_fuel_occupied_housing_units_wood",
+                "percent_house_heating_fuel_occupied_housing_units_gas_tank",
+                "est_value_owner_occupied_units_median_dollars"
+            ]]
             load_data(data, conn, table_name="acs_census_2021_cbsa")
         except Exception as e:
             logger.error(

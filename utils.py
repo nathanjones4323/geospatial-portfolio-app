@@ -45,6 +45,9 @@ def title_case_columns(columns: list) -> list:
 def get_metric_internal_name(display_name):
     mapping = {
         "Median Rent Price ($)": "est_gross_rent_occupied_units_paying_rent_median_dollars",
-        "Renter Occupied Housing (%)": "percent_housing_tenure_occupied_housing_units_renter_occupied"
+        "Renter Occupied Housing (%)": "percent_housing_tenure_occupied_housing_units_renter_occupied",
+        "Electric, Renewable, or No Heating Source (%)": "percent_renewable_energy",
+        "Direct Fossil Fuel Heating Source (%)": "percent_fossil_fuel",
+        "Median Home Value ($)": "est_value_owner_occupied_units_median_dollars",
     }
     return mapping.get(display_name, display_name)
