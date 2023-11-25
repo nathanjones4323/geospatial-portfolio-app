@@ -74,7 +74,7 @@ Once the pipelines have finished running (or if you are restarting the app), you
   - [ ] Add the rest of the metrics (might depend on fixing the truncating column name error)
   - [ ] Update the metric descriptions on the homepage (Datast Description)
   - [ ] Either make the user filter when ZCTA is selected, or simplify the polygon data so that it can be loaded into the UI without crashing it.
-  - [ ] Add drill down functionality to the map for CBSA --> ZCTA
+  - [ ] Add drill down functionality to the map for CBSA --> ZCTA on click
 
 ### Future
 
