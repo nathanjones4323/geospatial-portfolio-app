@@ -1,4 +1,5 @@
 import geopandas as gpd
+import pandas as pd
 import streamlit as st
 
 from utils import init_connection
@@ -35,3 +36,23 @@ def load_zcta_geom():
     geom_boundaries.rename(columns={"ZCTA5CE20": "zcta"}, inplace=True)
 
     return geom_boundaries
+
+
+def get_cbsa_center_point(cbsa_name) -> list:
+    conn = init_connection()
+
+    point = pd.read_sql("""
+    select 
+        "INTPTLAT"::numeric as internal_latitude
+        , "INTPTLON"::numeric as internal_longitude 
+    from cbsa_boundaries_2021_simplified
+    where "NAMELSAD" = %(cbsa_name)s
+    """,
+                        con=conn,
+                        params={"cbsa_name": cbsa_name},
+                        index_col=None)
+
+    # Convert to list
+    point = point.values.tolist()[0]
+
+    return point

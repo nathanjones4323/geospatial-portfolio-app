@@ -25,3 +25,23 @@ def extract_geography_boundaries(geography="zcta") -> gpd.GeoDataFrame:
         url = "https://www2.census.gov/geo/tiger/TIGER2021/CBSA/tl_2021_us_cbsa.zip"
     geo_data = gpd.read_file(url)
     return geo_data
+
+
+def extract_zip_to_cbsa() -> pd.DataFrame:
+    # Read in cross walk data
+    url = "https://www.huduser.gov/hudapi/public/usps?type=8&query=All"
+    token = os.environ["US_CENSUS_CROSSWALK_API_KEY"]
+    headers = {"Authorization": "Bearer {0}".format(token)}
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        logger.error("Failure, see status code: {0}".format(
+            response.status_code))
+    else:
+        zip_to_cbsa = pd.DataFrame(response.json()["data"]["results"])
+
+    zip_to_cbsa.rename(columns={"geoid": "zip_code",
+                                "cbsa": "cbsa_code"}, inplace=True)
+
+    return zip_to_cbsa

@@ -41,7 +41,7 @@ def load_cbsa_acs_data():
 
 
 @st.cache_data(show_spinner=False)
-def load_zcta_acs_data():
+def load_zcta_acs_data(cbsa_name: str):
 
     conn = init_connection()
 
@@ -56,16 +56,16 @@ def load_zcta_acs_data():
             , percent_housing_tenure_occupied_housing_units_renter_occupied
     
         -- Metric 3
-            , percent_house_heating_fuel_occupied_housing_units_solar_energy +
-                percent_house_heating_fuel_occupied_housing_units_electricity +
-                percent_house_heating_fuel_occupied_housing_units_no_fuel_used +
-                percent_house_heating_fuel_occupied_housing_units_other_fuel AS percent_renewable_energy
+            , percent_house_heating_fuel_occupied_housing_units_solar_energy::numeric +
+                percent_house_heating_fuel_occupied_housing_units_electricity::numeric +
+                percent_house_heating_fuel_occupied_housing_units_no_fuel_used::numeric +
+                percent_house_heating_fuel_occupied_housing_units_other_fuel::numeric AS percent_renewable_energy
 
         -- Metric 4
-            , percent_house_heating_fuel_occupied_housing_units_fuel_oil +
-                percent_house_heating_fuel_occupied_housing_units_coal_or_coke +
-                percent_house_heating_fuel_occupied_housing_units_wood +
-                percent_house_heating_fuel_occupied_housing_units_gas_tank as percent_fossil_fuel
+            , percent_house_heating_fuel_occupied_housing_units_fuel_oil::numeric +
+                percent_house_heating_fuel_occupied_housing_units_coal_or_coke::numeric +
+                percent_house_heating_fuel_occupied_housing_units_wood::numeric +
+                percent_house_heating_fuel_occupied_housing_units_gas_tank::numeric as percent_fossil_fuel
 
             -- Metric 5
             , est_value_owner_occupied_units_median_dollars

@@ -1,4 +1,6 @@
-from extract import extract_2021_acs_5_year_data, extract_geography_boundaries
+import pandas as pd
+from extract import (extract_2021_acs_5_year_data,
+                     extract_geography_boundaries, extract_zip_to_cbsa)
 from load import create_pkey, init_connection, load_boundary_data, load_data
 from loguru import logger
 from transform import clean_census_data, get_human_readable_columns
@@ -230,3 +232,30 @@ def run_polygon_simplification_pipeline():
 
             # Close DB Connection
             conn.close()
+
+
+def zip_to_cbsa_pipeline():
+    if not is_table_initialized("zip_to_cbsa"):
+
+        zip_to_cbsa = extract_zip_to_cbsa()
+
+        # Create DB Connection
+        try:
+            conn = init_connection()
+            logger.success("Successfully connected to DB")
+        except Exception as e:
+            logger.error(f"Error connecting to DB: {e}")
+
+        try:
+            # Load Data into DB
+            load_data(zip_to_cbsa, conn,
+                      table_name="zip_to_cbsa")
+        except Exception as e:
+            logger.error(
+                f"Error writing table zip_to_cbsa to DB: {e}")
+
+        try:
+            create_pkey(conn, table_name="zip_to_cbsa",
+                        index_column="id")
+        except Exception as e:
+            logger.error(f"Error creating primary key: {e}")
