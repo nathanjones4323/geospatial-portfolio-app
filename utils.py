@@ -5,6 +5,12 @@ from pandas import isnull
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 
+from ..data_pipelines.census.transform import standardize_column_name
+
+# Initialize global variables
+METRIC_NAME_MAPPING = {}
+SELECTED_METRICS = []
+
 
 def reduce_top_margin():
     st.markdown(
@@ -51,3 +57,28 @@ def get_metric_internal_name(display_name):
         "Median Home Value ($)": "est_value_owner_occupied_units_median_dollars",
     }
     return mapping.get(display_name, display_name)
+
+
+# Assuming that transform.py is in the parent directory
+def add_metric_mappings(metric_display_name: str, us_census_metric_name: str):
+
+    # Standardize the metric name
+    metric_internal_name = standardize_column_name(us_census_metric_name)
+
+    # Add the metric to the internal name <> display name mapping
+    METRIC_NAME_MAPPING[metric_display_name] = metric_internal_name
+
+    # Apply custom renaming logic for specific metrics (avoid PostgreSQL name truncation errors)
+    if metric_internal_name == "percent_house_heating_fuel_occupied_housing_units_bottled_tank_or_lp_gas":
+        metric_internal_name = "percent_house_heating_fuel_occupied_housing_units_gas_tank"
+
+    elif metric_internal_name == "percent_house_heating_fuel_occupied_housing_units_fuel_oil_kerosene_etc.":
+        metric_internal_name = "percent_house_heating_fuel_occupied_housing_units_fuel_oil"
+
+    # Add the metric to the list of selected metrics
+    SELECTED_METRICS.append(metric_internal_name)
+
+
+def add_metrics(us_census_metrics: list, metric_display_names: list):
+    for metric_display_name, us_census_metric_name in zip(metric_display_names, us_census_metrics):
+        add_metric_mappings(metric_display_name, us_census_metric_name)
