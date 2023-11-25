@@ -25,7 +25,7 @@ def clean_census_data(response: requests.Response, geography="zcta") -> pd.DataF
     return data
 
 
-def standardize_column_names(column_name):
+def standardize_column_name(column_name):
     """Standardize column names to be lowercase, snake case, and without special characters.
 
     Args:
@@ -74,7 +74,7 @@ def truncate_column_names(df: pd.DataFrame) -> None:
         df (pd.DataFrame): Dataframe of Census data you want to truncate columns for
     """
     # Replace strings that match this pattern: "(in_2021_inflation-adjusted_dollars)"
-    new_column_names = [standardize_column_names(
+    new_column_names = [standardize_column_name(
         col) for col in df.columns.values]
 
     df.columns = new_column_names

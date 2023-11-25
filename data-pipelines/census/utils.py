@@ -53,6 +53,8 @@ def simplify_cbsa_polygons(conn, tolerance=0.001):
             "INTPTLON",
             ST_SimplifyPreserveTopology(geometry, {tolerance}) AS geometry
         from cbsa_boundaries_2021
+        -- Exclude Puerto Rico
+        where "NAMELSAD" not like '%%, PR%%'
     );
     """
 
