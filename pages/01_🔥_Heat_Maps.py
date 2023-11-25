@@ -68,20 +68,23 @@ def app():
             data, on=granularity_info["on_column"], how="inner")
         data = data[[geographic_granularity_internal_name,
                      metric_internal_name, "geometry"]]
-        # Create the choropleth
-        create_choropleth(data=data,
-                          target_column=metric_internal_name,
-                          height=600,
-                          aliases=[geographic_granularity,
-                                   metric_display_name],
-                          colormap_caption=metric_display_name)
 
-        # Display the underlying map data
-        display_dataframe(data=data,
-                          metric_internal_name=metric_internal_name,
-                          metric_display_name=metric_display_name,
-                          geographic_granularity_internal_name=geographic_granularity_internal_name,
-                          geographic_granularity_display_name=geographic_granularity)
+        with st.spinner("Loading map..."):
+            # Create the choropleth
+            create_choropleth(data=data,
+                              target_column=metric_internal_name,
+                              height=600,
+                              aliases=[geographic_granularity,
+                                       metric_display_name],
+                              colormap_caption=metric_display_name)
+
+        with st.spinner("Loading data table..."):
+            # Display the underlying map data
+            display_dataframe(data=data,
+                              metric_internal_name=metric_internal_name,
+                              metric_display_name=metric_display_name,
+                              geographic_granularity_internal_name=geographic_granularity_internal_name,
+                              geographic_granularity_display_name=geographic_granularity)
 
 
 app()

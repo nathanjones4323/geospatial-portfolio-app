@@ -41,7 +41,7 @@ def load_cbsa_acs_data():
 
 
 @st.cache_data(show_spinner=False)
-def load_zcta_acs_data(cbsa_name: str):
+def load_zcta_acs_data():
 
     conn = init_connection()
 
