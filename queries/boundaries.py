@@ -23,16 +23,25 @@ def load_cbsa_geom_data():
 
 
 @st.cache_data(show_spinner=False, ttl=3600*24)
-def load_zcta_geom():
+def load_zcta_geom(cbsa_name: str):
     conn = init_connection()
 
     geom_boundaries = gpd.read_postgis(
         """
     select 
-        "ZCTA5CE20"
-        , geometry
+        zcta_boundaries_2021_simplified."ZCTA5CE20"
+        , zcta_boundaries_2021_simplified.geometry
     from zcta_boundaries_2021_simplified
-    """, con=conn, geom_col="geometry")
+        left join zip_to_cbsa
+            on zip_to_cbsa.zip_code = zcta_boundaries_2021_simplified."ZCTA5CE20"
+        left join cbsa_boundaries_2021_simplified
+            on cbsa_boundaries_2021_simplified."CBSAFP" = zip_to_cbsa.cbsa_code
+    where 1=1
+        and cbsa_boundaries_2021_simplified."NAMELSAD" =  %(cbsa_name)s
+    """,
+        con=conn,
+        geom_col="geometry",
+        params={"cbsa_name": cbsa_name})
     geom_boundaries.rename(columns={"ZCTA5CE20": "zcta"}, inplace=True)
 
     return geom_boundaries
@@ -40,7 +49,6 @@ def load_zcta_geom():
 
 def get_cbsa_center_point(cbsa_name) -> list:
     conn = init_connection()
-
     point = pd.read_sql("""
     select 
         "INTPTLAT"::numeric as internal_latitude
@@ -49,10 +57,6 @@ def get_cbsa_center_point(cbsa_name) -> list:
     where "NAMELSAD" = %(cbsa_name)s
     """,
                         con=conn,
-                        params={"cbsa_name": cbsa_name},
-                        index_col=None)
-
-    # Convert to list
-    point = point.values.tolist()[0]
+                        params={"cbsa_name": cbsa_name})
 
     return point

@@ -41,7 +41,7 @@ def load_cbsa_acs_data():
 
 
 @st.cache_data(show_spinner=False)
-def load_zcta_acs_data():
+def load_zcta_acs_data(cbsa_name: str):
 
     conn = init_connection()
 
@@ -70,8 +70,16 @@ def load_zcta_acs_data():
             -- Metric 5
             , est_value_owner_occupied_units_median_dollars
         from acs_census_2021_zcta
-        -- where est_gross_rent_occupied_units_paying_rent_median_dollars is not null
-        """, con=conn)
+            left join zip_to_cbsa
+                on zip_to_cbsa.zip_code = acs_census_2021_zcta.zcta
+            left join cbsa_boundaries_2021_simplified
+                on cbsa_boundaries_2021_simplified."CBSAFP" = zip_to_cbsa.cbsa_code
+        where 1=1
+            and cbsa_boundaries_2021_simplified."NAMELSAD" =  %(cbsa_name)s
+        """,
+        con=conn,
+        params={"cbsa_name": cbsa_name}
+    )
 
     # conn.close()
 
