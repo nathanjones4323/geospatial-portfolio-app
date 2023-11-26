@@ -6,52 +6,42 @@ def init_sidebar():
     # Write some instructions / help for the user inside of the sidebar
     st.sidebar.markdown(
         """
-        **Filter Options:**
-
-        Adjust these filters to modify what you see on the map.
-
-        Hover over the **(?)** icon to learn more about each filter.
-
+        **Find a metric you want to explore 👇**
         """
     )
 
-    with st.sidebar.form(key='Form1'):
+    # Init query params
+    query_params = st.experimental_get_query_params()
 
-        # Init query params
-        query_params = st.experimental_get_query_params()
+    # Set up the sidebar filters and widgets
+    if "metric_display_name" not in st.session_state:
+        st.session_state["metric_display_name"] = (
+            query_params.get("metric_display_name", [
+                "Median Rent Price ($)"])[0]
+        )
+    metric_display_name = st.sidebar.selectbox("Select a Metric",
+                                               options=[
+                                                   "Median Rent Price ($)",
+                                                   "Renter Occupied Housing (%)",
+                                                   "Electric, Renewable, or No Heating Source (%)",
+                                                   "Direct Fossil Fuel Heating Source (%)",
+                                                   "Median Home Value ($)"
+                                               ],
+                                               index=0,
+                                               help="Select a metric to view on the map",
+                                               key="metric_display_name_key")
 
-        if "geographic_granularity" not in st.session_state:
-            st.session_state["geographic_granularity"] = (
-                query_params.get("geographic_granularity", ["CBSA", "ZCTA"])[0]
-            )
-        geographic_granularity = st.selectbox("Select Geographic Granularity",
-                                              options=[
-                                                  "CBSA",
-                                                  "ZCTA"
-                                              ],
-                                              index=0,
-                                              help="ℹ️ [What is a CBSA ?](https://curri.slab.com/posts/definitions-v2hle5l7#hm0ta-cbsa)\n\nℹ️ [What is a ZCTA ?](https://curri.slab.com/posts/definitions-v2hle5l7#h0c1f-zcta-zip-code-tabulated-area)",
-                                              key="geographic_granularity_key")
+    st.sidebar.divider()
 
-        # Set up the sidebar filters and widgets
-        if "metric_display_name" not in st.session_state:
-            st.session_state["metric_display_name"] = (
-                query_params.get("metric_display_name", [
-                                 "Median Rent Price ($)"])[0]
-            )
-        metric_display_name = st.selectbox("Select a Metric",
-                                           options=[
-                                               "Median Rent Price ($)",
-                                               "Renter Occupied Housing (%)",
-                                               "Electric, Renewable, or No Heating Source (%)",
-                                               "Direct Fossil Fuel Heating Source (%)",
-                                               "Median Home Value ($)"
-                                           ],
-                                           index=0,
-                                           help="Select a metric to view on the map",
-                                           key="metric_display_name_key")
+    st.sidebar.markdown(
+        """ℹ️ [What is a CBSA ?](https://en.wikipedia.org/wiki/Core-based_statistical_area)""")
 
-        # Form submit button
-        submitted1 = st.form_submit_button(label='Refresh Metrics 🔄')
+    st.sidebar.markdown(
+        """ℹ️ [What is a ZCTA ?](https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html#:~:text=ZIP%20Code%20Tabulation%20Areas%20or,Plan%20(ZIP)%20Codes%20dataset.)""")
 
-        return metric_display_name, geographic_granularity, submitted1
+    st.sidebar.divider()
+
+    st.sidebar.markdown(
+        """Explore the CBSA map and click on a CBSA to create a drilled down map of the ZCTAs within that CBSA.""")
+
+    return metric_display_name

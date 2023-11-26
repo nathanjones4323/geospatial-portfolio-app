@@ -76,16 +76,18 @@ def app():
         data = data[[geographic_granularity_internal_name,
                      metric_internal_name, "geometry"]]
 
-        # Create the 3D map
-        create_3d_map(data=data, target_column=metric_internal_name,
-                      geographic_granularity=granularity_info["on_column"])
+        with st.spinner("Loading map..."):
+            # Create the 3D map
+            create_3d_map(data=data, target_column=metric_internal_name,
+                          geographic_granularity=granularity_info["on_column"])
 
-        # Display the underlying map data
-        display_dataframe(data=data,
-                          metric_internal_name=metric_internal_name,
-                          metric_display_name=metric_display_name,
-                          geographic_granularity_internal_name=geographic_granularity_internal_name,
-                          geographic_granularity_display_name=geographic_granularity)
+        with st.spinner("Loading data table..."):
+            # Display the underlying map data
+            display_dataframe(data=data,
+                              metric_internal_name=metric_internal_name,
+                              metric_display_name=metric_display_name,
+                              geographic_granularity_internal_name=geographic_granularity_internal_name,
+                              geographic_granularity_display_name=geographic_granularity)
 
 
 app()

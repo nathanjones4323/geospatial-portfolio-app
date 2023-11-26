@@ -49,11 +49,15 @@ def add_map_plugins(m):
     return m
 
 
-def create_choropleth(data: gpd.GeoDataFrame, target_column: str, height: int = 500, aliases: list = None, colormap_caption: str = None) -> dict:
+def create_choropleth(data: gpd.GeoDataFrame, target_column: str, height: int = 500, aliases: list = None, colormap_caption: str = None, cbsa_internal_points: list = None) -> dict:
 
     # Create the folium map
-    m = folium.Map(location=[35.3, -97.6], zoom_start=4,
-                   tiles='CartoDB positron', scrollWheelZoom=True)
+    if cbsa_internal_points is None:
+        m = folium.Map(location=[35.3, -97.6], zoom_start=4,
+                       tiles='CartoDB positron', scrollWheelZoom=True)
+    else:
+        m = folium.Map(location=cbsa_internal_points, zoom_start=7,
+                       tiles='CartoDB positron', scrollWheelZoom=True)
 
     # Define the colormap
     colormap = create_colormap(data=data,
@@ -114,7 +118,7 @@ def create_choropleth(data: gpd.GeoDataFrame, target_column: str, height: int = 
     add_map_plugins(m)
 
     map = st_folium(m, use_container_width=True,
-                    height=height, returned_objects=[])
+                    height=height, returned_objects=["last_object_clicked_tooltip"])
 
     return map
 
