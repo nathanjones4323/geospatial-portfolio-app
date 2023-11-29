@@ -58,9 +58,10 @@ def app():
     )
 
     # Initalize the sidebar
-    metric_display_name, geographic_granularity = init_sidebar()
+    metric_display_name = init_sidebar()
     metric_internal_name = get_metric_internal_name(metric_display_name)
 
+    geographic_granularity = "CBSA"
     # Get mapping information
     granularity_info = get_geographic_mapping(geographic_granularity)
     if granularity_info:
