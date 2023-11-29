@@ -14,7 +14,7 @@
 
 ---
 
-<p align="center"> PROJECT DESCRIPTION
+<p align="center"> Explore a number of housing metrics from US Census data in an interactive GIS application
     <br> 
 </p>
 
@@ -23,9 +23,12 @@
 - [About](#about)
 - [Getting Started](#getting_started)
 - [Running the App](#usage)
+- [Deployment](#deployment)
 - [TODO](#todo)
 
 ## 🧐 About <a name = "about"></a>
+
+This project is an interactive GIS application that allows users to explore a number of housing metrics from US Census data. The app is built using [Streamlit](https://streamlit.io/) and [Deck.gl](https://deck.gl/). The application uses a PostgreSQL backend to store the data. The data is sourced from the [US Census Bureau](https://www.census.gov/).
 
 
 ## 🏁 Getting Started <a name = "getting_started"></a>
@@ -65,6 +68,41 @@ docker-compose logs -f
 ```
 
 Once the pipelines have finished running (or if you are restarting the app), you can access the Streamlit UI at http://localhost:8501
+
+## 🚀 Deployment <a name = "todo"></a>
+
+This app is deployed on AWS using ECS and RDS (PostgreSQL).
+
+Here are the steps to deploy the app on AWS:
+
+#### Push the containers to Docker Hub (do this for data pipelines and Streamlit app)
+
+Login to Docker
+
+```
+docker login
+```
+
+Build the containers
+
+```
+docker build -t {image_name}:$(git rev-parse --short HEAD) . --platform linux/amd64
+```
+
+Tag the containers
+
+```
+docker tag {image_name}:$(git rev-parse --short HEAD) {docker_hub_username}/{image_name}:$(git rev-parse --short HEAD)
+```
+
+Push the containers to Docker Hub
+
+```
+docker push {docker_hub_username}/{image_name}:$(git rev-parse --short HEAD)
+```
+
+
+
 
 ## 🗒️ TODO <a name = "todo"></a>
 
