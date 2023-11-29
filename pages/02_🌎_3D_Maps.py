@@ -58,7 +58,7 @@ def app():
     )
 
     # Initalize the sidebar
-    metric_display_name, geographic_granularity, submitted1 = init_sidebar()
+    metric_display_name, geographic_granularity = init_sidebar()
     metric_internal_name = get_metric_internal_name(metric_display_name)
 
     # Get mapping information
