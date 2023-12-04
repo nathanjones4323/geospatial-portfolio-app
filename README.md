@@ -22,7 +22,7 @@
 
 - [About](#about)
 - [Getting Started](#getting_started)
-- [Running the App](#usage)
+- [Running the App Locally](#usage)
 - [Deployment](#deployment)
 - [TODO](#todo)
 
@@ -69,7 +69,7 @@ docker-compose logs -f
 
 Once the pipelines have finished running (or if you are restarting the app), you can access the Streamlit UI at http://localhost:8501
 
-## 🚀 Deployment <a name = "todo"></a>
+## 🚀 Deployment <a name = "deployment"></a>
 
 This app is deployed on AWS using ECS and RDS (PostgreSQL).
 
@@ -109,14 +109,14 @@ docker push {docker_hub_username}/{image_name}:$(git rev-parse --short HEAD)
 ### In Progress
 
 - [ ] Build out Streamlit UI / functionality
-  - [ ] Add the rest of the metrics (might depend on fixing the truncating column name error)
   - [ ] Update the metric descriptions on the homepage (Datast Description)
-  - [ ] Either make the user filter when ZCTA is selected, or simplify the polygon data so that it can be loaded into the UI without crashing it.
-  - [ ] Add drill down functionality to the map for CBSA --> ZCTA on click
+- [ ] Add deployment instructions for AWS
+- [ ] Add deployment instructions for Digital Ocean
 
 ### Future
 
 - [ ] Fix truncating column name error ==> Postgres can only handle 63 characters for column names and this is causing duplicate column names
+  - For now, just filter for a subset of columns in the data pipelines
 - [ ] Add query parameters so users can share links to specific views of the app
 - [ ] Make a tutorial on how to use the app
 - [ ] Speed up the data pipelines using threading
@@ -141,5 +141,6 @@ docker push {docker_hub_username}/{image_name}:$(git rev-parse --short HEAD)
   - [x] Add interpretation of the 3D map => What does the height/color of the buildings represent?
   - [x] Add `st.dataframe` tables to accompany the maps
   - [x] Make the pydeck tooltip parameter dynamic based on UI selections
+  - [x] Add drill down functionality to the map for CBSA --> ZCTA on click
 
   #### Notes
