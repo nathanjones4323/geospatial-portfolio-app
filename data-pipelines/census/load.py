@@ -13,7 +13,7 @@ def init_connection() -> Connection:
     db_port = os.getenv('POSTGRES_PORT')
     db_name = os.getenv('POSTGRES_DB')
 
-    conn_string = f"postgresql://{db_user}:{db_pass}@{db_host}/{db_name}"
+    conn_string = f"postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
     engine = create_engine(url=conn_string)
     conn = engine.connect()
     return conn

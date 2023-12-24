@@ -168,6 +168,9 @@ server { listen 80; listen [::]:80; server_name ${dropet_ipv4_address};
     error_log   /var/log/nginx/geospatial-portfolio-app.error.log;
 
     location / {
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header X-Real-IP $remote_addr;
       proxy_set_header X-Forwarded-Host $host;
@@ -185,6 +188,9 @@ server {
     error_log   /var/log/nginx/geospatial-portfolio-app.error.log;
 
     location / {
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header X-Real-IP $remote_addr;
       proxy_set_header X-Forwarded-Host $host;
@@ -253,6 +259,9 @@ docker push {docker_hub_username}/{image_name}:$(git rev-parse --short HEAD)
 
 ### In Progress
 
+- [ ] Check if the current size of the Droplet is sufficient for the app to run (pipelines might be running out of memory)
+  - [ ] If not, increase the size of the Droplet
+  - [ ] Could also run the pipeline on local machine once the database is already created
 - [ ] Build out Streamlit UI / functionality
   - [ ] Update the metric descriptions on the homepage (Datast Description)
 - [ ] Add deployment instructions for Digital Ocean
