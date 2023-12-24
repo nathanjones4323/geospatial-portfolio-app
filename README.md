@@ -148,6 +148,11 @@ US_CENSUS_CROSSWALK_API_KEY=
 
 Where `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT`, and `POSTGRES_HOST` are the same values you used when creating the managed PostgreSQL database. `US_CENSUS_CROSSWALK_API_KEY` is the API key you can get from the [US Census Bureau](https://api.census.gov/data/key_signup.html).
 
+* Run the App
+```bash
+cd && cd geospatial-portfolio-app && docker-compose up -d
+```
+
 *  Install and configure nginx
 ```bash
 sudo apt install nginx &&

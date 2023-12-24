@@ -34,9 +34,9 @@ services:
     env_file:
       - ./data-pipelines/census/.env
     command: ["python3", "main.py"]  # Command to run your Python script
-    depends_on:
-      db:
-        condition: service_healthy  # Wait for the db service to be healthy
+    # depends_on:
+    #   db:
+    #     condition: service_healthy  # Wait for the db service to be healthy
   
   streamlit:
     image: streamlit
