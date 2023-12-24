@@ -211,7 +211,7 @@ Check that the config file syntax is correct `sudo nginx -t`
 
 Reload nginx with new config `sudo systemctl reload nginx.service`
 
-Check that app is able to be opened now in your browser at `http://{droplet_ip_address} & http://{your_subdomain}.{your_domain}`
+Check that app is able to be opened now in your browser at `http://{droplet_ip_address}:8501 & http://{your_subdomain}.{your_domain}`
 
 *  Installing Certbot and Setting Up TLS Certificates (HTTPS instead of HTTP)
 
