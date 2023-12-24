@@ -46,26 +46,25 @@ def run():
 
                         **Metrics available to explore:**
 
-                        1. **Owner vs Renter Occupied:**
-                        - This column distinguishes between homes owned by their occupants and those that are rented. It provides insights into the housing landscape, helping you understand the distribution of homeownership and rental properties in your chosen area.
+                        1. Median Rent Price ($):
 
-                        2. **House Heating Fuel:**
-                        - Reveals the primary heating sources used in homes, offering insights into energy consumption and environmental impact. Categories may include natural gas, electricity, oil, etc.
+                        This metric reveals the median monthly rent paid by renters in a given location, offering a clear picture of rental expenses.
+                        
+                        2. Renter Occupied Housing (%):
 
-                        3. **Value:**
-                        - Represents the estimated market value of owner-occupied homes. This column gives an indication of the economic value of residential properties in the area.
+                        Distinguishing between homes owned and rented, this metric provides the percentage of housing that is occupied by renters, aiding in understanding the distribution of ownership.
+                        
+                        3. Electric, Renewable, or No Heating Source (%):
 
-                        4. **SMOC (Selected Monthly Owner Costs):**
-                        - Refers to the total monthly costs associated with owning a home, including mortgage payments, property taxes, and insurance. This metric helps users gauge the financial commitment of homeownership.
+                        This category highlights the percentage of homes using electric, renewable, or no heating sources, shedding light on energy consumption and environmental impact.
+                        
+                        4. Direct Fossil Fuel Heating Source (%):
 
-                        5. **SMOCAPI (Selected Monthly Owner Costs as a Percentage of Income):**
-                        - Expresses the portion of the household income dedicated to covering monthly homeownership costs. This percentage is a crucial indicator for understanding the affordability of homeownership in a given location.
+                        Specifically focusing on heating sources, this metric indicates the percentage of homes relying on direct fossil fuels for heating, contributing to insights on energy choices.
+                        
+                        5. Median Home Value ($):
 
-                        6. **Gross Rent:**
-                        - Represents the total monthly rent paid by renters. It includes rent plus the cost of any utilities and fuels. This figure provides insights into the overall rental expenses in the area.
-
-                        7. **GRAPI (Gross Rent as a Percentage of Income):**
-                        - Indicates the percentage of a household's income allocated to cover rental costs. This metric helps assess the affordability of renting in a specific location.
+                        Reflecting the estimated market value of owner-occupied homes, this metric offers an indication of the economic value of residential properties in the area.
 
                         By exploring these metrics from the ACS 2021 5-year estimate DP04 dataset, you gain a deeper understanding of the housing dynamics across the US, whether you're interested in ownership patterns, heating sources, property values, monthly costs, or rental affordability.
                         """)

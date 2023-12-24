@@ -1,29 +1,29 @@
 version: '3'
 
 services:
-  db:
-    container_name: geospatial_app_postgis
-    hostname: geospatial_app_postgis
-    image: geospatial_app_postgis
-    build:
-      context: ./db
-      dockerfile: Dockerfile
-    env_file:
-      - ./db/.env
-    # deploy:
-    #   resources:
-    #     limits:
-    #       memory: 6G
+  # db:
+  #   container_name: geospatial_app_postgis
+  #   hostname: geospatial_app_postgis
+  #   image: geospatial_app_postgis
+  #   build:
+  #     context: ./db
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - ./db/.env
+  #   # deploy:
+  #   #   resources:
+  #   #     limits:
+  #   #       memory: 6G
 
-    volumes:
-      - geospatial_app_postgis:/var/lib/geospatial_app_postgis/data
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -q -d geo_db -U admin_user"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  #   volumes:
+  #     - geospatial_app_postgis:/var/lib/geospatial_app_postgis/data
+  #   ports:
+  #     - "5432:5432"
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -q -d geo_db -U admin_user"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
   geospatial_app_data-pipeline:
     image: geospatial_app_data-pipeline
@@ -51,6 +51,6 @@ services:
     ports:
       - "8501:8501"
 
-volumes:
-  geospatial_app_postgis:
-    name: geospatial_app_postgis
+# volumes:
+#   geospatial_app_postgis:
+#     name: geospatial_app_postgis

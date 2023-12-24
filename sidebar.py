@@ -42,6 +42,6 @@ def init_sidebar():
     st.sidebar.divider()
 
     st.sidebar.markdown(
-        """Explore the CBSA map and click on a CBSA to create a drilled down map of the ZCTAs within that CBSA.""")
+        """Explore the CBSA map and click on a CBSA to create a drilled down map of the ZCTAs within that CBSA (Heatmaps only).""")
 
     return metric_display_name

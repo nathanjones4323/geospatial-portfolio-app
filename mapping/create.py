@@ -123,7 +123,7 @@ def create_choropleth(data: gpd.GeoDataFrame, target_column: str, height: int = 
     return map
 
 
-def create_3d_map(data: gpd.GeoDataFrame, target_column: str, geographic_granularity: Literal["cbsa", "zcta"] = "cbsa") -> None:
+def create_3d_map(data: gpd.GeoDataFrame, target_column: str, target_display_name: str, geographic_granularity: Literal["cbsa", "zcta"] = "cbsa") -> None:
     # Get the min and max values for setting elevation and fill color
     min_value = data[target_column].min()
     max_value = data[target_column].max()
@@ -159,7 +159,7 @@ def create_3d_map(data: gpd.GeoDataFrame, target_column: str, geographic_granula
     r = pdk.Deck(layers=[geojson_layer],
                  initial_view_state=view_state,
                  tooltip={
-        "html": f"<b>{geographic_granularity.upper()}: {{{geographic_granularity}}}</b><br/><b>Median Rent Price ($)</b> {{{target_column}}}",
+        "html": f"<b>{geographic_granularity.upper()}: {{{geographic_granularity}}}</b><br/><b>{target_display_name}</b> {{{target_column}}}",
         "style": {
             "backgroundColor": "steelblue",
             "color": "white"
