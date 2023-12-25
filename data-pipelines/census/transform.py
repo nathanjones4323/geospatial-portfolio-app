@@ -22,6 +22,7 @@ def clean_census_data(response: requests.Response, geography="zcta") -> pd.DataF
                     "metropolitan statistical area/micropolitan statistical area": "cbsa_code", "NAME": "cbsa"}, inplace=True)
     # Replace NULL encoded values with NaN
     data.replace(to_replace="-666666666", value=np.nan, inplace=True)
+    data.replace(to_replace="-666666666.0", value=np.nan, inplace=True)
     return data
 
 
