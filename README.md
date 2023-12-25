@@ -148,9 +148,11 @@ US_CENSUS_CROSSWALK_API_KEY=
 
 Where `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT`, and `POSTGRES_HOST` are the same values you used when creating the managed PostgreSQL database. `US_CENSUS_CROSSWALK_API_KEY` is the API key you can get from the [US Census Bureau](https://api.census.gov/data/key_signup.html).
 
-* Run the App
+* Run the data pipelines on your **local machine** to populate the database
+
+* Run the Streamlit UI
 ```bash
-cd && cd geospatial-portfolio-app && docker-compose up -d
+cd && cd geospatial-portfolio-app && docker compose up -d --build streamlit
 ```
 
 *  Install and configure nginx
@@ -213,6 +215,22 @@ Reload nginx with new config `sudo systemctl reload nginx.service`
 
 Check that app is able to be opened now in your browser at `http://{droplet_ip_address}:8501 & http://{your_subdomain}.{your_domain}`
 
+*You need to have a subdomain set up already for your application to work. You can do this by going to your domain registrar and adding an A record for your subdomain that points to your droplet IP address.*
+
+![A record](images/subdomain.png)
+
+* Setting up your domain name with Digital Ocean
+
+```bash
+doctl compute domain create {your_domain} --ip-address {droplet_ip_address}
+```
+
+*  Setting up your subdomain name with Digital Ocean
+
+Follow the instructions [here](https://docs.digitalocean.com/products/networking/dns/how-to/add-subdomain/) to set up your subdomain with Digital Ocean.
+
+Follow the instructions for common domain registrars [here](https://docs.digitalocean.com/products/networking/dns/getting-started/dns-registrars/) to set up your subdomain with your domain registrar.
+
 *  Installing Certbot and Setting Up TLS Certificates (HTTPS instead of HTTP)
 
 ```bash
@@ -259,12 +277,8 @@ docker push {docker_hub_username}/{image_name}:$(git rev-parse --short HEAD)
 
 ### In Progress
 
-- [ ] Check if the current size of the Droplet is sufficient for the app to run (pipelines might be running out of memory)
-  - [ ] If not, increase the size of the Droplet
-  - [ ] Could also run the pipeline on local machine once the database is already created
-- [ ] Build out Streamlit UI / functionality
-  - [ ] Update the metric descriptions on the homepage (Datast Description)
-- [ ] Add deployment instructions for Digital Ocean
+- [ ] Add `Getting Started` section to home page
+- [ ] Add `Tutorials` section to home page
 
 ### Future
 
@@ -282,18 +296,10 @@ docker push {docker_hub_username}/{image_name}:$(git rev-parse --short HEAD)
     - Add the metric internal name inside of `queries.py`
     - Define metric display name inside of the `options` for the multiselect widget in `siebar.py`
 
-### Completed
-
-- [x] Add CBSA data to the data pipelines
-- [x] Add a check to the data pipelines to see if the data has already run and if so, don't run it again
-- [x] Fix memory error ==> the data pipelines are running out of memory when trying to load the ZCTA boundary data into the database
-  - Fixed by writing the writing the data in chunks instead of all at once
-- [x] Rewrite `mapping.py` module
-- [ ] Build out Streamlit UI / functionality
-  - [x] Fix choropleth color scale => All geographies look the same color, but we should be able to see the difference between them
-  - [x] Add interpretation of the 3D map => What does the height/color of the buildings represent?
-  - [x] Add `st.dataframe` tables to accompany the maps
-  - [x] Make the pydeck tooltip parameter dynamic based on UI selections
-  - [x] Add drill down functionality to the map for CBSA --> ZCTA on click
-
   #### Notes
+
+  - [ ] Make Census GPT 
+    - [ ] Store all of the census data in vector DB
+    - [ ] Do Q/A over the data with LLM (ex: What is the most expensive Metro Area to rent in?)
+    - [ ] Use the vector DB to create the maps
+      - [ ] Make the LLM call the mapping functions

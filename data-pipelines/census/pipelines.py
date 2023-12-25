@@ -5,7 +5,26 @@ from load import create_pkey, init_connection, load_boundary_data, load_data
 from loguru import logger
 from transform import clean_census_data, get_human_readable_columns
 
-from utils import create_simplified_polygons, is_table_initialized
+from utils import (create_geospatial_schema, create_postgis_extension,
+                   create_simplified_polygons, is_table_initialized)
+
+
+def run_db_init_pipeline():
+    # Create DB Connection
+    try:
+        conn = init_connection()
+        logger.success("Successfully connected to DB")
+    except Exception as e:
+        logger.error(f"Error connecting to DB: {e}")
+
+    # Create PostGIS Extension
+    create_postgis_extension(conn)
+
+    # Create Geospatial Schema
+    create_geospatial_schema(conn)
+
+    # Close DB Connection
+    conn.close()
 
 
 def run_acs_2021_zcta_pipeline():
@@ -62,7 +81,8 @@ def run_acs_2021_zcta_pipeline():
                 "est_value_owner_occupied_units_median_dollars"
             ]]
             logger.debug(f"Columns:\n{data.columns}")
-            load_data(data, conn, table_name="acs_census_2021_zcta")
+            load_data(data, conn, schema_name="geospatial",
+                      table_name="acs_census_2021_zcta")
         except Exception as e:
             logger.error(
                 f"Error writing table acs_census_2021_zcta to DB: {e}")
@@ -131,7 +151,8 @@ def run_acs_2021_cbsa_pipeline():
                 "percent_house_heating_fuel_occupied_housing_units_gas_tank",
                 "est_value_owner_occupied_units_median_dollars"
             ]]
-            load_data(data, conn, table_name="acs_census_2021_cbsa")
+            load_data(data, conn, schema_name="geospatial",
+                      table_name="acs_census_2021_cbsa")
         except Exception as e:
             logger.error(
                 f"Error writing table acs_census_2021_cbsa to DB: {e}")
@@ -234,7 +255,7 @@ def run_polygon_simplification_pipeline():
             conn.close()
 
 
-def zip_to_cbsa_pipeline():
+def run_zip_to_cbsa_pipeline():
     if not is_table_initialized("zip_to_cbsa"):
 
         zip_to_cbsa = extract_zip_to_cbsa()
@@ -248,7 +269,7 @@ def zip_to_cbsa_pipeline():
 
         try:
             # Load Data into DB
-            load_data(zip_to_cbsa, conn,
+            load_data(zip_to_cbsa, conn, schema_name="geospatial",
                       table_name="zip_to_cbsa")
         except Exception as e:
             logger.error(

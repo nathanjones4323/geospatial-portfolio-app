@@ -19,20 +19,20 @@ def init_connection() -> Connection:
     return conn
 
 
-def load_data(data, conn, table_name):
+def load_data(data, conn, schema_name, table_name):
     # Dump Data into New Database Table
-    data.to_sql(table_name, conn,
+    data.to_sql(table_name, conn, schema=schema_name,
                 if_exists='fail', index=True, index_label='id')
     logger.success(f"Successfully wrote table {table_name} to DB")
 
 
-def load_boundary_data(data, conn, table_name):
-    data.to_postgis(table_name, conn,
+def load_boundary_data(data, conn, schema_name, table_name):
+    data.to_postgis(table_name, conn, schema=schema_name,
                     if_exists='fail', index=True, index_label='id', chunksize=100)
     logger.success(f"Successfully wrote table {table_name} to DB")
 
 
-def create_pkey(conn, table_name, index_column):
+def create_pkey(conn, schema_name, table_name, index_column):
     try:
         conn = init_connection()
         logger.success("Successfully connected to DB")
@@ -40,6 +40,6 @@ def create_pkey(conn, table_name, index_column):
         logger.error(f"Error connecting to DB: {e}")
     # Create Primary Key from Index column
     conn.execute(
-        text(f'ALTER TABLE {table_name} ADD PRIMARY KEY ({index_column});'))
+        text(f'ALTER TABLE {schema_name}.{table_name} ADD PRIMARY KEY ({index_column});'))
     conn.commit()
     logger.success(f"Created primary key on {index_column} column")

@@ -76,6 +76,7 @@ def app():
             data, on=granularity_info["on_column"], how="inner")
         data = data[[geographic_granularity_internal_name,
                      metric_internal_name, "geometry"]]
+        data.dropna(inplace=True)
 
         with st.spinner("Loading map..."):
             # Create the 3D map
