@@ -51,6 +51,28 @@ Navigate to the app's directory
 cd geospatial-portfolio-app
 ```
 
+Create a `.env` file inside of `./data-pipelines/census`
+```bash
+cd data-pipelines/census && touch .env
+```
+
+Paste in the following environment variables into the `.env` file
+```bash
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
+POSTGRES_PORT=
+POSTGRES_HOST=
+US_CENSUS_CROSSWALK_API_KEY=
+```
+
+Where `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT`, and `POSTGRES_HOST` are the connection values for your PostgreSQL database. `US_CENSUS_CROSSWALK_API_KEY` is the API key you can get from the [US Census Bureau](https://api.census.gov/data/key_signup.html).
+
+Create a `.env` file inside of `./db` and use the same environment variables as above
+```bash
+cd .. && cd .. && cd db && touch .env
+```
+
 Run the following in your terminal:
 ```
 docker-compose up -d

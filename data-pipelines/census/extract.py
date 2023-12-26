@@ -1,11 +1,9 @@
-import json
 import os
 
 import geopandas as gpd
 import pandas as pd
 import requests
 from loguru import logger
-from sqlalchemy import create_engine
 
 
 def extract_2021_acs_5_year_data(geography="zcta") -> requests.Response:
