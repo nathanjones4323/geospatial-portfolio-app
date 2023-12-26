@@ -276,7 +276,7 @@ def run_zip_to_cbsa_pipeline():
                 f"Error writing table zip_to_cbsa to DB: {e}")
 
         try:
-            create_pkey(conn, table_name="zip_to_cbsa",
+            create_pkey(conn, schema_name="geospatial", table_name="zip_to_cbsa",
                         index_column="id")
         except Exception as e:
             logger.error(f"Error creating primary key: {e}")
