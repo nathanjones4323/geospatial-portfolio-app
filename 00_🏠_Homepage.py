@@ -87,7 +87,8 @@ def run():
 
     st.markdown("## Walkthrough from the Developer")
     with st.expander("**Tutorial Videos**"):
-        st.write("Coming Soon")
+        components.iframe(
+            """"https://www.loom.com/embed/e129f71dc9334c9a997cf19d8b938b8c?sid=8e2634f9-4ca6-4852-80e1-0874a64ef18a""")
 
 
 if __name__ == "__main__":
