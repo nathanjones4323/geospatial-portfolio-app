@@ -15,7 +15,7 @@ def load_cbsa_geom_data():
     select 
         "NAMELSAD"
         , geometry
-    from cbsa_boundaries_2021_simplified
+    from geospatial.cbsa_boundaries_2021_simplified
     """, con=conn, geom_col="geometry")
     geom_boundaries.rename(columns={"NAMELSAD": "cbsa"}, inplace=True)
 
@@ -31,13 +31,13 @@ def load_zcta_geom(cbsa_name: str):
     select 
         zcta_boundaries_2021_simplified."ZCTA5CE20"
         , zcta_boundaries_2021_simplified.geometry
-    from zcta_boundaries_2021_simplified
-        left join zip_to_cbsa
-            on zip_to_cbsa.zip_code = zcta_boundaries_2021_simplified."ZCTA5CE20"
-        left join cbsa_boundaries_2021_simplified
-            on cbsa_boundaries_2021_simplified."CBSAFP" = zip_to_cbsa.cbsa_code
+    from geospatial.zcta_boundaries_2021_simplified
+        left join geospatial.zip_to_cbsa
+            on geospatial.zip_to_cbsa.zip_code = geospatial.zcta_boundaries_2021_simplified."ZCTA5CE20"
+        left join geospatial.cbsa_boundaries_2021_simplified
+            on geospatial.cbsa_boundaries_2021_simplified."CBSAFP" = geospatial.zip_to_cbsa.cbsa_code
     where 1=1
-        and cbsa_boundaries_2021_simplified."NAMELSAD" =  %(cbsa_name)s
+        and geospatial.cbsa_boundaries_2021_simplified."NAMELSAD" =  %(cbsa_name)s
     """,
         con=conn,
         geom_col="geometry",
@@ -53,7 +53,7 @@ def get_cbsa_center_point(cbsa_name) -> list:
     select 
         "INTPTLAT"::numeric as internal_latitude
         , "INTPTLON"::numeric as internal_longitude 
-    from cbsa_boundaries_2021_simplified
+    from geospatial.cbsa_boundaries_2021_simplified
     where "NAMELSAD" = %(cbsa_name)s
     """,
                         con=conn,

@@ -29,7 +29,7 @@ def run_db_init_pipeline():
 
 def run_acs_2021_zcta_pipeline():
     # Check if table is already initialized
-    if not is_table_initialized("acs_census_2021_zcta"):
+    if not is_table_initialized("geospatial.acs_census_2021_zcta"):
         try:
             r = extract_2021_acs_5_year_data(geography="zcta")
             logger.success(
@@ -88,7 +88,7 @@ def run_acs_2021_zcta_pipeline():
                 f"Error writing table acs_census_2021_zcta to DB: {e}")
 
         try:
-            create_pkey(conn, table_name="acs_census_2021_zcta",
+            create_pkey(conn, schema_name="geospatial", table_name="acs_census_2021_zcta",
                         index_column="id")
         except Exception as e:
             logger.error(f"Error creating primary key: {e}")
@@ -99,7 +99,7 @@ def run_acs_2021_zcta_pipeline():
 
 def run_acs_2021_cbsa_pipeline():
     # Check if table is already initialized
-    if not is_table_initialized("acs_census_2021_cbsa"):
+    if not is_table_initialized("geospatial.acs_census_2021_cbsa"):
         try:
             r = extract_2021_acs_5_year_data(geography="cbsa")
             logger.success(
@@ -158,7 +158,7 @@ def run_acs_2021_cbsa_pipeline():
                 f"Error writing table acs_census_2021_cbsa to DB: {e}")
 
         try:
-            create_pkey(conn, table_name="acs_census_2021_cbsa",
+            create_pkey(conn, schema_name="geospatial", table_name="acs_census_2021_cbsa",
                         index_column="id")
         except Exception as e:
             logger.error(f"Error creating primary key on id column: {e}")
@@ -169,7 +169,7 @@ def run_acs_2021_cbsa_pipeline():
 
 def run_zcta_geography_boundary_pipeline():
     # Check if table is already initialized
-    if not is_table_initialized("zcta_boundaries_2021"):
+    if not is_table_initialized("geospatial.zcta_boundaries_2021"):
         # Read in ZCTA and CBSA Geo Data
         zcta_geo_data = extract_geography_boundaries(geography="zcta")
 
@@ -182,14 +182,14 @@ def run_zcta_geography_boundary_pipeline():
 
         try:
             # Load Data into DB
-            load_boundary_data(zcta_geo_data, conn,
+            load_boundary_data(zcta_geo_data, conn, schema_name="geospatial",
                                table_name="zcta_boundaries_2021")
         except Exception as e:
             logger.error(
                 f"Error writing table zcta_boundaries_2021 to DB: {e}")
 
         try:
-            create_pkey(conn, table_name="zcta_boundaries_2021",
+            create_pkey(conn, schema_name="geospatial", table_name="zcta_boundaries_2021",
                         index_column="id")
         except Exception as e:
             logger.error(f"Error creating primary key: {e}")
@@ -197,7 +197,7 @@ def run_zcta_geography_boundary_pipeline():
 
 def run_cbsa_geography_boundary_pipeline():
     # Check if table is already initialized
-    if not is_table_initialized("cbsa_boundaries_2021"):
+    if not is_table_initialized("geospatial.cbsa_boundaries_2021"):
         # Read in ZCTA and CBSA Geo Data
         cbsa_geo_data = extract_geography_boundaries(geography="cbsa")
 
@@ -210,14 +210,14 @@ def run_cbsa_geography_boundary_pipeline():
 
         try:
             # Load Data into DB
-            load_boundary_data(cbsa_geo_data, conn,
+            load_boundary_data(cbsa_geo_data, conn, schema_name="geospatial",
                                table_name="cbsa_boundaries_2021")
         except Exception as e:
             logger.error(
                 f"Error writing table cbsa_boundaries_2021 to DB: {e}")
 
         try:
-            create_pkey(conn, table_name="cbsa_boundaries_2021",
+            create_pkey(conn, schema_name="geospatial", table_name="cbsa_boundaries_2021",
                         index_column="id")
         except Exception as e:
             logger.error(f"Error creating primary key: {e}")
@@ -225,7 +225,7 @@ def run_cbsa_geography_boundary_pipeline():
 
 def run_polygon_simplification_pipeline():
     for geography in ["ZCTA", "CBSA"]:
-        table_name = f"{geography.lower()}_boundaries_2021_simplified"
+        table_name = f"geospatial.{geography.lower()}_boundaries_2021_simplified"
         # Check if table is already initialized
         if not is_table_initialized(table_name):
             # Create DB Connection
@@ -246,7 +246,7 @@ def run_polygon_simplification_pipeline():
                     f"Error creating table {table_name}: {e}")
 
             try:
-                create_pkey(conn, table_name=table_name,
+                create_pkey(conn, schema_name="geospatial", table_name=table_name,
                             index_column="id")
             except Exception as e:
                 logger.error(f"Error creating primary key: {e}")
@@ -256,7 +256,7 @@ def run_polygon_simplification_pipeline():
 
 
 def run_zip_to_cbsa_pipeline():
-    if not is_table_initialized("zip_to_cbsa"):
+    if not is_table_initialized("geospatial.zip_to_cbsa"):
 
         zip_to_cbsa = extract_zip_to_cbsa()
 
@@ -276,7 +276,7 @@ def run_zip_to_cbsa_pipeline():
                 f"Error writing table zip_to_cbsa to DB: {e}")
 
         try:
-            create_pkey(conn, table_name="zip_to_cbsa",
+            create_pkey(conn, schema_name="geospatial", table_name="zip_to_cbsa",
                         index_column="id")
         except Exception as e:
             logger.error(f"Error creating primary key: {e}")

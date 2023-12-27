@@ -37,7 +37,23 @@ def run():
     column_1, column_2 = st.columns(2)
     with column_1:
         with st.expander("**Getting Started**"):
-            st.write("Getting Started")
+            st.markdown(
+                """
+                **Welcome to the Geographic Analysis App!**
+
+                This app provides interactive maps of housing data from the US Census. You can explore different metrics across the United States, including median rent price, renter occupied housing, heating sources, and median home value.
+
+                **How to use the app:**
+
+                There are 2 types of maps available: 3D Maps and Heat Maps. You can select the map type from the sidebar on the left.
+
+                Once you select a map type, you can select a metric to explore from the sidebar.
+
+                *Heat Maps have drill down functionality that will generate a zip code level view of a Metropolitan Area that you click on*
+
+                Get familiar with the app and start exploring the metrics to gain valuable insights into housing dynamics across the United States. Happy analyzing!
+                """
+            )
 
     with column_2:
         with st.expander("**Dataset Description**"):
@@ -71,7 +87,8 @@ def run():
 
     st.markdown("## Walkthrough from the Developer")
     with st.expander("**Tutorial Videos**"):
-        st.write("Getting Started")
+        components.iframe(
+            """"https://www.loom.com/embed/e129f71dc9334c9a997cf19d8b938b8c?sid=8e2634f9-4ca6-4852-80e1-0874a64ef18a""")
 
 
 if __name__ == "__main__":

@@ -74,7 +74,7 @@ def simplify_cbsa_polygons(conn, schema_name, tolerance=0.001):
             "INTPTLAT",
             "INTPTLON",
             ST_SimplifyPreserveTopology(geometry, {tolerance}) AS geometry
-        from cbsa_boundaries_2021
+        from {schema_name}.cbsa_boundaries_2021
         -- Exclude Puerto Rico
         where "NAMELSAD" not like '%%, PR%%'
     );
@@ -106,7 +106,7 @@ def simplify_zcta_polygons(conn, schema_name, tolerance=0.001):
                 "INTPTLAT20",
                 "INTPTLON20",
                 ST_SimplifyPreserveTopology(geometry, {tolerance}) AS geometry
-            from zcta_boundaries_2021
+            from {schema_name}.zcta_boundaries_2021
         );
         """
 

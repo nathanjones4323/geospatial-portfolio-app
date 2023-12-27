@@ -51,6 +51,28 @@ Navigate to the app's directory
 cd geospatial-portfolio-app
 ```
 
+Create a `.env` file inside of `./data-pipelines/census`
+```bash
+cd data-pipelines/census && touch .env
+```
+
+Paste in the following environment variables into the `.env` file
+```bash
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
+POSTGRES_PORT=
+POSTGRES_HOST=
+US_CENSUS_CROSSWALK_API_KEY=
+```
+
+Where `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT`, and `POSTGRES_HOST` are the connection values for your PostgreSQL database. `US_CENSUS_CROSSWALK_API_KEY` is the API key you can get from the [US Census Bureau](https://api.census.gov/data/key_signup.html).
+
+Create a `.env` file inside of `./db` and use the same environment variables as above
+```bash
+cd .. && cd .. && cd db && touch .env
+```
+
 Run the following in your terminal:
 ```
 docker-compose up -d
@@ -148,70 +170,63 @@ US_CENSUS_CROSSWALK_API_KEY=
 
 Where `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT`, and `POSTGRES_HOST` are the same values you used when creating the managed PostgreSQL database. `US_CENSUS_CROSSWALK_API_KEY` is the API key you can get from the [US Census Bureau](https://api.census.gov/data/key_signup.html).
 
+*  Copy the same `.env` file into the `./db` directory
+```bash
+cd && cd geospatial-portfolio-app && cd db && nano .env
+```
+
 * Run the data pipelines on your **local machine** to populate the database
 
 * Run the Streamlit UI
 ```bash
-cd && cd geospatial-portfolio-app && docker compose up -d --build streamlit
+cd && cd geospatial-portfolio-app && docker-compose up -d --build streamlit
 ```
 
 *  Install and configure nginx
 ```bash
-sudo apt install nginx &&
-sudo ufw allow "Nginx Full" &&
-sudo nano /etc/nginx/sites-available/geospatial-portfolio-app.conf
+sudo apt update
+sudo apt install nginx
 ```
 
-*  Paste in the following configuration into the `geospatial-portfolio-app.conf` file
+*  Edit the default nginx config file
 ```bash
-server { listen 80; listen [::]:80; server_name ${dropet_ipv4_address};
+sudo nano /etc/nginx/sites-available/default
+```
 
-    access_log  /var/log/nginx/geospatial-portfolio-app.access.log;
-    error_log   /var/log/nginx/geospatial-portfolio-app.error.log;
-
-    location / {
-      proxy_http_version 1.1;
-      proxy_set_header Upgrade $http_upgrade;
-      proxy_set_header Connection "upgrade";
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-Host $host;
-      proxy_set_header X-Forwarded-Proto https;
-      proxy_pass http://localhost:8501;
-  }
-}
-
-server {
-    listen       80;
-    listen       [::]:80;
-    server_name  ${your_subdomain}.${your_domain};
-
-    access_log  /var/log/nginx/geospatial-portfolio-app.access.log;
-    error_log   /var/log/nginx/geospatial-portfolio-app.error.log;
-
-    location / {
-      proxy_http_version 1.1;
-      proxy_set_header Upgrade $http_upgrade;
-      proxy_set_header Connection "upgrade";
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-Host $host;
-      proxy_set_header X-Forwarded-Proto https;
-      proxy_pass http://localhost:8501;
-  }
+Add the following inside of the `server` block
+```bash
+location / {
+    proxy_pass http://localhost:8501; # Ensure this is the port Streamlit runs on
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
 }
 ```
-Replace `${dropet_ipv4_address}` with the IP address of your droplet and `${your_subdomain}.${your_domain}` with the subdomain and domain you want to use for your app.
 
-`${your_subdomain}.${your_domain}` is the URL you will use to access the app instead of the droplet IP address.
+Restart nginx
+```bash
+systemctl restart nginx
+```
 
-Hit `control + O` and then `ENTER` to save. Press `control + X` to exit
+* Domain and HTTPS
 
-Link the configuration file `sudo ln -s /etc/nginx/sites-available/geospatial-portfolio-app.conf /etc/nginx/sites-enabled/`
+Point your domain to your Droplet’s IP address using your domain provider’s DNS (Namecheap) settings.
 
-Check that the config file syntax is correct `sudo nginx -t`
+Do this by adding an A record where the host value is your subdomain and the value is your droplet IP address.
 
-Reload nginx with new config `sudo systemctl reload nginx.service`
+Update the Nginx configuration to include your domain in the `server_name` directive.
+
+```bash
+server_name subdomain.your_domain.com www.subdomain.your_domain.com;
+```
+
+Replace `subdomain` with your subdomain you set earlier and `your_domain` with your domain name.
+
+Restart nginx
+```bash
+systemctl restart nginx
+```
 
 Check that app is able to be opened now in your browser at `http://{droplet_ip_address}:8501 & http://{your_subdomain}.{your_domain}`
 
@@ -219,17 +234,6 @@ Check that app is able to be opened now in your browser at `http://{droplet_ip_a
 
 ![A record](images/subdomain.png)
 
-* Setting up your domain name with Digital Ocean
-
-```bash
-doctl compute domain create {your_domain} --ip-address {droplet_ip_address}
-```
-
-*  Setting up your subdomain name with Digital Ocean
-
-Follow the instructions [here](https://docs.digitalocean.com/products/networking/dns/how-to/add-subdomain/) to set up your subdomain with Digital Ocean.
-
-Follow the instructions for common domain registrars [here](https://docs.digitalocean.com/products/networking/dns/getting-started/dns-registrars/) to set up your subdomain with your domain registrar.
 
 *  Installing Certbot and Setting Up TLS Certificates (HTTPS instead of HTTP)
 
