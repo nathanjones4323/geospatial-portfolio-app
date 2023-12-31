@@ -87,8 +87,9 @@ def run():
 
     st.markdown("## Walkthrough from the Developer")
     with st.expander("**Tutorial Videos**"):
-        components.iframe(
-            """"https://www.loom.com/embed/e129f71dc9334c9a997cf19d8b938b8c?sid=8e2634f9-4ca6-4852-80e1-0874a64ef18a""")
+        video_file = open('./images/geospatial_portfolio.mp4', 'rb')
+        video_bytes = video_file.read()
+        st.video(video_bytes)
 
 
 if __name__ == "__main__":

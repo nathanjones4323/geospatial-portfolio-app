@@ -24,6 +24,7 @@
 - [Getting Started](#getting_started)
 - [Running the App Locally](#usage)
 - [Deployment](#deployment)
+- [App Tutorial](#tutorial)
 - [TODO](#todo)
 
 ## 🧐 About <a name = "about"></a>
@@ -67,6 +68,8 @@ US_CENSUS_CROSSWALK_API_KEY=
 ```
 
 Where `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT`, and `POSTGRES_HOST` are the connection values for your PostgreSQL database. `US_CENSUS_CROSSWALK_API_KEY` is the API key you can get from the [US Census Bureau](https://api.census.gov/data/key_signup.html).
+
+The values you use here will be what your PostgreSQL database uses when it is initialized, and what you will connect with when you run the app.
 
 Create a `.env` file inside of `./db` and use the same environment variables as above
 ```bash
@@ -182,64 +185,182 @@ cd && cd geospatial-portfolio-app && cd db && nano .env
 cd && cd geospatial-portfolio-app && docker-compose up -d --build streamlit
 ```
 
-*  Install and configure nginx
-```bash
-sudo apt update
-sudo apt install nginx
-```
-
-*  Edit the default nginx config file
-```bash
-sudo nano /etc/nginx/sites-available/default
-```
-
-Add the following inside of the `server` block
-```bash
-location / {
-    proxy_pass http://localhost:8501; # Ensure this is the port Streamlit runs on
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_set_header Host $host;
-}
-```
-
-Restart nginx
-```bash
-systemctl restart nginx
-```
-
 * Domain and HTTPS
 
 Point your domain to your Droplet’s IP address using your domain provider’s DNS (Namecheap) settings.
 
 Do this by adding an A record where the host value is your subdomain and the value is your droplet IP address.
 
-Update the Nginx configuration to include your domain in the `server_name` directive.
-
-```bash
-server_name subdomain.your_domain.com www.subdomain.your_domain.com;
-```
-
-Replace `subdomain` with your subdomain you set earlier and `your_domain` with your domain name.
-
-Restart nginx
-```bash
-systemctl restart nginx
-```
-
-Check that app is able to be opened now in your browser at `http://{droplet_ip_address}:8501 & http://{your_subdomain}.{your_domain}`
-
 *You need to have a subdomain set up already for your application to work. You can do this by going to your domain registrar and adding an A record for your subdomain that points to your droplet IP address.*
 
 ![A record](images/subdomain.png)
 
+*  Install and configure nginx
+```bash
+sudo apt update
+sudo apt install nginx
+```
 
-*  Installing Certbot and Setting Up TLS Certificates (HTTPS instead of HTTP)
+* Check that nginx is running
+```bash
+systemctl status nginx
+```
+
+If the status is `active (running)`, then nginx is running. You can check by going to your droplet's IP address in your browser. You should see the nginx welcome page.
+
+*  Set up `/etc/nginx/nginx.conf` as follows:
+```bash
+nano /etc/nginx/nginx.conf
+```
+
+Paste in the following:
+```bash
+user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+error_log /var/log/nginx/error.log;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+    worker_connections 768;
+    # multi_accept on;
+}
+
+http {
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
+    ssl_prefer_server_ciphers on;
+
+    ##
+    # Basic Settings
+    ##
+
+    sendfile on;
+    tcp_nopush on;
+    types_hash_max_size 2048;
+    # server_tokens off;
+
+    # server_names_hash_bucket_size 64;
+    # server_name_in_redirect off;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    ##
+    # Logging Settings
+    ##
+
+    access_log /var/log/nginx/access.log;
+
+    ##
+    # Gzip Settings
+    ##
+
+    gzip on;
+
+    # gzip_vary on;
+    # gzip_proxied any;
+    # gzip_comp_level 6;
+    # gzip_buffers 16 8k;
+    # gzip_http_version 1.1;
+    # gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+    ##
+    # Virtual Host Configs
+    ##
+
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+}
+```
+
+Hit `control + o` and then `Enter` to save and `control + x` to exit.
+
+* Grant write permissions to the sites-available and sites-enabled folders using the following commands:
+```bash
+sudo chmod 777 /etc/nginx/sites-available
+sudo chmod 777 /etc/nginx/sites-enabled
+```
+
+* Create a "streamlit-webservice" file for the routing configuration of Nginx
+```bash
+nano /etc/nginx/sites-available/streamlit-webservice
+```
+
+Paste in the following:
+```bash
+server {
+    listen       80;
+    server_name  ${droplet_ip}; # Domain name or IP address
+    location / {
+        proxy_pass http://0.0.0.0:8501/; # Route from HTTP port 80 to Streamlit port 8501
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+```
+And replace `${droplet_ip}` with your droplet's IP address.
+
+* Create a symlink
+```bash
+ln -s /etc/nginx/sites-available/streamlit-webservice /etc/nginx/sites-enabled/streamlit-webservice
+```
+
+* Restart nginx
+```bash
+sudo service nginx restart
+sudo service nginx status
+```
+
+* Check that you can access the app in your browser at `http://{droplet_ip_address}:8501` and now at `http://{droplet_ip_address}` (without the port number it should be getting routed to the Streamlit app)
+
+* Use an SSL certificate to enable HTTPS
+```bash
+sudo apt install certbot python3-certbot-nginx
+```
 
 ```bash
-sudo apt install certbot python3-certbot-nginx &&
-sudo certbot --nginx -d ${your_subdomain}.${your_domain}
+sudo certbot --nginx -d ＜Domain＞
+```
+
+Replace `<Domain>` with your (sub)domain name. (ex: `geospatial.nathanjones.tech`)
+
+* Update `/etc/nginx/sites-available/streamlit-webservice` to include your domain in the `server_name` directive.
+```bash
+server {
+    listen       80;
+    server_name  <Domain>; # Domain name or IP address
+    location / {
+        proxy_pass http://0.0.0.0:8501/; # Route from HTTP port 80 to Streamlit port 8501
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_http_version 1.1; # If you do not upgrade, the loading hangs
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/<Domain>/fullchain.pem; # Authenticate with a certificate from Certbot
+    ssl_certificate_key /etc/letsencrypt/live/<Domain>/privkey.pem; # Authenticate with a certificate from Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+}
+```
+
+Replace `<Domain>` with your (sub)domain name. (ex: `geospatial.nathanjones.tech`)
+
+* Modify `nginx.conf` as follows:
+```bash
+nano /etc/nginx/nginx.conf
+```
+
+Restart nginx
+```bash
+systemctl restart nginx
 ```
 
 Hit `control + d` to exit droplets and end ssh session
@@ -275,6 +396,12 @@ docker push {docker_hub_username}/{image_name}:$(git rev-parse --short HEAD)
 ``` -->
 
 
+## 📚 App Tutorial <a name = "tutorial"></a>
+
+<!-- Inline video from `images/geospatial_portfolio.mp4` -->
+<video width="100%" height="100%" controls>
+  <source src="images/geospatial_portfolio.mp4" type="video/mp4">
+
 
 
 ## 🗒️ TODO <a name = "todo"></a>
@@ -307,3 +434,6 @@ docker push {docker_hub_username}/{image_name}:$(git rev-parse --short HEAD)
     - [ ] Do Q/A over the data with LLM (ex: What is the most expensive Metro Area to rent in?)
     - [ ] Use the vector DB to create the maps
       - [ ] Make the LLM call the mapping functions
+
+I followed the instructions from here to get rid of the port number in the URL
+`https://www.alibabacloud.com/blog/using-lets-encrypt-to-enable-https-for-a-streamlit-web-service_600130`
