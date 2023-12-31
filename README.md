@@ -24,6 +24,7 @@
 - [Getting Started](#getting_started)
 - [Running the App Locally](#usage)
 - [Deployment](#deployment)
+- [App Tutorial](#tutorial)
 - [TODO](#todo)
 
 ## 🧐 About <a name = "about"></a>
@@ -67,6 +68,8 @@ US_CENSUS_CROSSWALK_API_KEY=
 ```
 
 Where `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`, `POSTGRES_PORT`, and `POSTGRES_HOST` are the connection values for your PostgreSQL database. `US_CENSUS_CROSSWALK_API_KEY` is the API key you can get from the [US Census Bureau](https://api.census.gov/data/key_signup.html).
+
+The values you use here will be what your PostgreSQL database uses when it is initialized, and what you will connect with when you run the app.
 
 Create a `.env` file inside of `./db` and use the same environment variables as above
 ```bash
@@ -392,6 +395,12 @@ Push the containers to Docker Hub
 docker push {docker_hub_username}/{image_name}:$(git rev-parse --short HEAD)
 ``` -->
 
+
+## 📚 App Tutorial <a name = "tutorial"></a>
+
+<!-- Inline video from `images/geospatial_portfolio.mp4` -->
+<video width="100%" height="100%" controls>
+  <source src="images/geospatial_portfolio.mp4" type="video/mp4">
 
 
 
